@@ -4,6 +4,28 @@ A free, privacy-first calorie and weight tracking web app. No account, no instal
 
 **Live app → [andos80.github.io/calorie-tracker](https://andos80.github.io/calorie-tracker/)**
 
+<img src="icon-512.png" width="120" alt="Calorie Tracker icon"/>
+
+---
+
+## Install on your phone
+
+The app can be added to your home screen and works like a native app — no App Store required.
+
+### iPhone / iPad (Safari)
+1. Open **[andos80.github.io/calorie-tracker](https://andos80.github.io/calorie-tracker/)** in **Safari**
+2. Tap the **Share** button (the box with an arrow at the bottom of the screen)
+3. Scroll down and tap **"Add to Home Screen"**
+4. Tap **Add** — the app icon appears on your home screen
+
+### Android (Chrome)
+1. Open the link in **Chrome**
+2. Tap the **⋮** menu (top right)
+3. Tap **"Add to Home screen"**
+4. Tap **Add** — done
+
+Once installed it launches fullscreen without the browser bar, just like a native app.
+
 ---
 
 ## Features
@@ -12,7 +34,8 @@ A free, privacy-first calorie and weight tracking web app. No account, no instal
 - Set your daily calorie goal and track progress with a gradient progress bar
 - Log meals from the built-in food library using a dropdown with **75+ common foods**
 - Smart units per food type — eggs in pcs, milk in glasses, bread in slices, beer in cl, etc.
-- Add any meal manually with full macro breakdown (protein, carbs, fat)
+- Color-coded macro breakdown — 🟣 Protein · 🟠 Carbs · 🟡 Fat
+- Add any meal manually with full macro values
 - Navigate to any past or future date with the arrow buttons
 - Export and import your personal data as a `.json` backup file
 
@@ -22,7 +45,7 @@ A free, privacy-first calorie and weight tracking web app. No account, no instal
 - Daily goal of 2000 ml, resets automatically each day
 
 ### 🔍 Search Food
-- Browse the built-in library by category with filter chips
+- Browse the built-in library by category with emoji filter chips
 - Real-time search filters the library as you type
 - **Search online** via [Open Food Facts](https://world.openfoodfacts.org/) for anything not in the library
 - Select a result → enter grams → log it to today in one tap
@@ -47,7 +70,7 @@ A free, privacy-first calorie and weight tracking web app. No account, no instal
 
 ### 🌙 Dark Mode
 - Toggle between light and dark with the button in the top corner
-- Deep navy dark theme, easy on the eyes
+- Deep indigo dark theme, easy on the eyes
 - Preference is saved and restored automatically
 
 ---
@@ -68,7 +91,7 @@ A free, privacy-first calorie and weight tracking web app. No account, no instal
 | **g** | Chicken, beef, fish, salmon, tuna, rice, pasta, oats, cheese, all vegetables |
 
 ### Categories
-Eggs & Dairy · Meat & Fish · Bread & Grains · Vegetables · Fruits · Drinks · Snacks & Other
+🥚 Eggs & Dairy · 🥩 Meat & Fish · 🍞 Bread & Grains · 🥦 Vegetables · 🍎 Fruits · 🥤 Drinks · 🍫 Snacks & Other
 
 ---
 
@@ -88,7 +111,7 @@ Each person keeps their own file — this is how multiple people can use the sam
 
 ## How to Use
 
-1. Open **[andos80.github.io/calorie-tracker](https://andos80.github.io/calorie-tracker/)** in any browser
+1. Open **[andos80.github.io/calorie-tracker](https://andos80.github.io/calorie-tracker/)** in any browser (or install it — see above)
 2. On the **Today** tab, set your daily calorie goal and tap **Save**
 3. Log meals using the **Add from library** dropdown, or fill in the manual form below it
 4. Log water intake in the **💧 Water intake** section
@@ -101,9 +124,10 @@ Each person keeps their own file — this is how multiple people can use the sam
 
 ## Design & Compatibility
 
-- Clean, premium design using the **Inter** typeface
+- Playful, modern design with a green–teal gradient and color-coded nutrition info
 - Full **dark mode** support
 - Tested and optimised for **mobile** (iPhone/Android) and desktop
+- Installable as a **PWA** — works like a native app with its own icon
 - Works in any modern browser — Chrome, Safari, Firefox, Edge
 
 ---
@@ -112,6 +136,7 @@ Each person keeps their own file — this is how multiple people can use the sam
 
 - Single HTML file — no framework, no build step, no dependencies to install
 - Data stored in `localStorage` as JSON (no server, no account)
+- Installable as a PWA via `manifest.json` and Apple meta tags
 - Food search powered by [Open Food Facts](https://world.openfoodfacts.org/) (open-source food database)
 - Charts rendered by [Chart.js](https://www.chartjs.org/)
 - Fonts from [Google Fonts](https://fonts.google.com/) (Inter)
