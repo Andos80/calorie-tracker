@@ -10,7 +10,6 @@
     --bg:               #f0f4f8;
     --surface:          #ffffff;
     --surface2:         #f7fafc;
-    --surface3:         #f0f4f8;
     --text:             #1a202c;
     --muted:            #718096;
     --border:           #e2e8f0;
@@ -26,12 +25,16 @@
     --bar-ok:           #68d391;
     --bar-over:         #fc8181;
     --shadow:           rgba(0,0,0,.08);
+    --water:            #3b82f6;
+    --water-bg:         #eff6ff;
+    --water-border:     #bfdbfe;
+    --water-text:       #1d4ed8;
+    --water-fill:       #3b82f6;
   }
   body.dark {
     --bg:               #0f172a;
     --surface:          #1e293b;
     --surface2:         #273344;
-    --surface3:         #0f172a;
     --text:             #f1f5f9;
     --muted:            #94a3b8;
     --border:           #334155;
@@ -47,12 +50,15 @@
     --bar-ok:           #4ade80;
     --bar-over:         #f87171;
     --shadow:           rgba(0,0,0,.3);
+    --water-bg:         #1e3a5f;
+    --water-border:     #1e40af;
+    --water-text:       #93c5fd;
+    --water-fill:       #60a5fa;
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; transition: background .2s, color .2s; }
 
-  /* Header */
   header { background: #2d6a4f; color: #fff; padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; }
   header h1 { font-size: 1.3rem; font-weight: 700; }
   .header-right { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
@@ -62,7 +68,6 @@
   .dark-toggle { background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3); color: #fff; border-radius: 8px; padding: 0.4rem 0.75rem; cursor: pointer; font-size: 1rem; line-height: 1; transition: background .15s; }
   .dark-toggle:hover { background: rgba(255,255,255,.25); }
 
-  /* Nav */
   nav { display: flex; gap: 0.5rem; background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 1.5rem; }
   nav button { background: none; border: none; padding: 0.75rem 1rem; font-size: 0.95rem; cursor: pointer; color: var(--muted); border-bottom: 3px solid transparent; transition: all .15s; }
   nav button.active { color: var(--accent-text); border-bottom-color: var(--accent); font-weight: 600; }
@@ -71,7 +76,7 @@
   .page.active { display: block; }
 
   /* Summary card */
-  .goal-card { background: var(--surface); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.25rem; box-shadow: 0 1px 3px var(--shadow); }
+  .goal-card { background: var(--surface); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1rem; box-shadow: 0 1px 3px var(--shadow); }
   .goal-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem; }
   .goal-row span { font-size: 0.85rem; color: var(--muted); }
   .goal-row strong { font-size: 1.6rem; font-weight: 700; }
@@ -83,6 +88,26 @@
   .macro { flex: 1; text-align: center; background: var(--surface2); border-radius: 8px; padding: 0.5rem; }
   .macro span { display: block; font-size: 0.72rem; color: var(--muted); }
   .macro strong { font-size: 1rem; }
+
+  /* Water card */
+  .water-card { background: var(--surface); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1rem; box-shadow: 0 1px 3px var(--shadow); }
+  .water-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; }
+  .water-title { font-size: 0.95rem; font-weight: 600; }
+  .water-amount { font-size: 0.85rem; color: var(--muted); }
+  .water-amount strong { color: var(--water-text); }
+  .water-bar { height: 10px; background: var(--progress-bg); border-radius: 99px; overflow: hidden; margin-bottom: 0.75rem; }
+  .water-fill { height: 100%; background: var(--water-fill); border-radius: 99px; transition: width .4s; }
+  .water-glasses { display: flex; gap: 0.3rem; margin-bottom: 0.75rem; flex-wrap: wrap; }
+  .water-drop { font-size: 1.3rem; filter: grayscale(1) opacity(.3); transition: filter .2s; }
+  .water-drop.filled { filter: none; }
+  .water-btns { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+  .water-btn { background: var(--water-bg); color: var(--water-text); border: 1px solid var(--water-border); border-radius: 8px; padding: 0.4rem 0.85rem; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: opacity .15s; }
+  .water-btn:hover { opacity: .8; }
+  .water-btn.undo { background: var(--surface2); color: var(--muted); border-color: var(--border); font-weight: 500; }
+  .water-custom { display: flex; gap: 0.4rem; align-items: center; margin-left: auto; }
+  .water-custom input { width: 70px; padding: 0.38rem 0.6rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.85rem; background: var(--surface); color: var(--text); outline: none; }
+  .water-custom input:focus { border-color: var(--water-fill); }
+  .water-custom span { font-size: 0.78rem; color: var(--muted); }
 
   /* Date nav */
   .date-nav { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
@@ -108,7 +133,6 @@
   .form-group { flex: 1; min-width: 110px; }
   .form-group label { display: block; font-size: 0.78rem; color: var(--muted); margin-bottom: 0.3rem; }
 
-  /* Inputs */
   input[type=text], input[type=number], select {
     width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border);
     border-radius: 8px; font-size: 0.9rem; outline: none;
@@ -118,24 +142,21 @@
   input[readonly] { background: var(--surface2); color: var(--muted); }
   select option { background: var(--surface); color: var(--text); }
 
-  /* Amount + unit */
   .amount-unit { display: flex; align-items: center; gap: 0.4rem; }
   .amount-unit input { flex: 1; min-width: 60px; }
   .unit-badge { font-size: 0.78rem; color: #fff; background: var(--accent); border-radius: 6px; padding: 0.25rem 0.55rem; white-space: nowrap; font-weight: 600; }
 
-  /* Cal preview */
   .cal-preview-row { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.75rem; }
   .cal-preview-row .cal-num { font-size: 1.4rem; font-weight: 700; color: var(--accent-text); }
   .cal-preview-row .cal-label { font-size: 0.8rem; color: var(--muted); }
   .cal-preview-row .macro-mini { font-size: 0.78rem; color: var(--muted); margin-left: auto; }
 
-  /* Buttons */
   .btn-primary { background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 0.55rem 1.25rem; font-size: 0.9rem; font-weight: 600; cursor: pointer; margin-top: 0.75rem; transition: background .15s; }
   .btn-primary:hover { background: var(--accent-hover); }
   .btn-secondary { background: var(--surface); color: var(--accent-text); border: 1.5px solid var(--accent); border-radius: 8px; padding: 0.55rem 1rem; font-size: 0.9rem; font-weight: 600; cursor: pointer; margin-top: 0; transition: background .15s; white-space: nowrap; }
   .btn-secondary:hover { background: var(--accent-light); }
 
-  /* Search tab */
+  /* Search */
   .search-bar { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; }
   .search-bar input { flex: 1; }
   .search-bar button { margin-top: 0; }
@@ -163,6 +184,7 @@
   @media (max-width: 480px) {
     .form-row { flex-direction: column; }
     .macro-row { gap: 0.5rem; }
+    .water-custom { margin-left: 0; }
   }
 </style>
 </head>
@@ -193,6 +215,7 @@
     <button onclick="changeDay(1)">&#8594;</button>
   </div>
 
+  <!-- Calorie summary -->
   <div class="goal-card">
     <div class="goal-row">
       <div>
@@ -210,8 +233,31 @@
     </div>
   </div>
 
+  <!-- Water tracker -->
+  <div class="water-card">
+    <div class="water-header">
+      <span class="water-title">💧 Water intake</span>
+      <span class="water-amount"><strong id="waterMl">0</strong> / <span id="waterGoalDisplay">2000</span> ml</span>
+    </div>
+    <div class="water-bar"><div class="water-fill" id="waterFill" style="width:0%"></div></div>
+    <div class="water-glasses" id="waterGlasses"></div>
+    <div class="water-btns">
+      <button class="water-btn" onclick="addWater(250)">+1 glass</button>
+      <button class="water-btn" onclick="addWater(330)">+33 cl</button>
+      <button class="water-btn" onclick="addWater(500)">+50 cl</button>
+      <button class="water-btn undo" onclick="addWater(-250)">↩ undo</button>
+      <div class="water-custom">
+        <input type="number" id="waterCustom" min="1" max="2000" placeholder="ml" />
+        <span>ml</span>
+        <button class="water-btn" onclick="addWaterCustom()" style="margin:0">+Add</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Meal log -->
   <div class="meals-list" id="mealsList"></div>
 
+  <!-- Library quick-add -->
   <div class="add-card">
     <h3>Add from library</h3>
     <div class="form-row">
@@ -237,6 +283,7 @@
     <button class="btn-primary" onclick="addFromLibrary()">Add to Today</button>
   </div>
 
+  <!-- Manual add -->
   <div class="add-card">
     <h3>Add manually</h3>
     <div class="form-row">
@@ -299,10 +346,16 @@
 const MEALS_KEY = 'ct_meals';
 const GOAL_KEY  = 'ct_goal';
 const DARK_KEY  = 'ct_dark';
-function loadData() { try { return JSON.parse(localStorage.getItem(MEALS_KEY)) || {}; } catch { return {}; } }
+const WATER_KEY = 'ct_water';
+const WGOAL_KEY = 'ct_water_goal';
+
+function loadData()  { try { return JSON.parse(localStorage.getItem(MEALS_KEY))  || {}; } catch { return {}; } }
 function saveData(d) { localStorage.setItem(MEALS_KEY, JSON.stringify(d)); }
-function getGoal()   { return parseInt(localStorage.getItem(GOAL_KEY) || '2000'); }
+function loadWater() { try { return JSON.parse(localStorage.getItem(WATER_KEY))  || {}; } catch { return {}; } }
+function saveWater(d){ localStorage.setItem(WATER_KEY, JSON.stringify(d)); }
+function getGoal()   { return parseInt(localStorage.getItem(GOAL_KEY)  || '2000'); }
 function setGoal(v)  { localStorage.setItem(GOAL_KEY, String(v)); }
+function getWaterGoal()  { return parseInt(localStorage.getItem(WGOAL_KEY) || '2000'); }
 
 // ── Dark mode ────────────────────────────────────────────────────
 function applyDark(on) {
@@ -318,96 +371,102 @@ function toggleDark() {
 
 // ── Food library ─────────────────────────────────────────────────
 const FOOD_LIBRARY = [
-  { name:'Egg, whole',        cal:155, p:13,   c:1.1, f:11,   cat:'Eggs & Dairy',    unit:'pcs',   ug:60  },
-  { name:'Egg white',         cal:52,  p:11,   c:0.7, f:0.2,  cat:'Eggs & Dairy',    unit:'pcs',   ug:30  },
-  { name:'Milk, whole',       cal:61,  p:3.2,  c:4.8, f:3.3,  cat:'Eggs & Dairy',    unit:'glass', ug:200 },
-  { name:'Milk, skimmed',     cal:35,  p:3.4,  c:5.0, f:0.1,  cat:'Eggs & Dairy',    unit:'glass', ug:200 },
-  { name:'Cheddar cheese',    cal:403, p:25,   c:1.3, f:33,   cat:'Eggs & Dairy',    unit:'g',     ug:1   },
-  { name:'Mozzarella',        cal:280, p:22,   c:2.2, f:17,   cat:'Eggs & Dairy',    unit:'g',     ug:1   },
-  { name:'Cottage cheese',    cal:98,  p:11,   c:3.4, f:4.3,  cat:'Eggs & Dairy',    unit:'g',     ug:1   },
-  { name:'Cream cheese',      cal:342, p:6.0,  c:4.1, f:34,   cat:'Eggs & Dairy',    unit:'tbsp',  ug:15  },
-  { name:'Greek yogurt',      cal:59,  p:10,   c:3.6, f:0.4,  cat:'Eggs & Dairy',    unit:'g',     ug:1   },
-  { name:'Natural yogurt',    cal:61,  p:3.5,  c:4.7, f:3.3,  cat:'Eggs & Dairy',    unit:'g',     ug:1   },
-  { name:'Butter',            cal:717, p:0.9,  c:0.1, f:81,   cat:'Eggs & Dairy',    unit:'tbsp',  ug:14  },
-  { name:'Sour cream',        cal:193, p:2.1,  c:4.6, f:19,   cat:'Eggs & Dairy',    unit:'tbsp',  ug:15  },
-  { name:'Chicken breast',    cal:165, p:31,   c:0,   f:3.6,  cat:'Meat & Fish',     unit:'g',     ug:1   },
-  { name:'Chicken thigh',     cal:209, p:26,   c:0,   f:11,   cat:'Meat & Fish',     unit:'g',     ug:1   },
-  { name:'Turkey breast',     cal:135, p:30,   c:0,   f:1.0,  cat:'Meat & Fish',     unit:'g',     ug:1   },
-  { name:'Beef mince (lean)', cal:215, p:26,   c:0,   f:12,   cat:'Meat & Fish',     unit:'g',     ug:1   },
-  { name:'Beef steak',        cal:271, p:26,   c:0,   f:18,   cat:'Meat & Fish',     unit:'g',     ug:1   },
-  { name:'Pork chop',         cal:231, p:28,   c:0,   f:13,   cat:'Meat & Fish',     unit:'g',     ug:1   },
-  { name:'Ham',               cal:145, p:21,   c:1.5, f:6.0,  cat:'Meat & Fish',     unit:'slice', ug:30  },
-  { name:'Bacon',             cal:541, p:37,   c:1.4, f:42,   cat:'Meat & Fish',     unit:'slice', ug:15  },
-  { name:'Sausage',           cal:301, p:11,   c:3.0, f:27,   cat:'Meat & Fish',     unit:'pcs',   ug:50  },
-  { name:'Salmon',            cal:208, p:20,   c:0,   f:13,   cat:'Meat & Fish',     unit:'g',     ug:1   },
-  { name:'Tuna (canned)',     cal:116, p:26,   c:0,   f:1.0,  cat:'Meat & Fish',     unit:'g',     ug:1   },
-  { name:'Cod',               cal:82,  p:18,   c:0,   f:0.7,  cat:'Meat & Fish',     unit:'g',     ug:1   },
-  { name:'Shrimp',            cal:99,  p:24,   c:0.2, f:0.3,  cat:'Meat & Fish',     unit:'g',     ug:1   },
-  { name:'Mackerel',          cal:205, p:19,   c:0,   f:14,   cat:'Meat & Fish',     unit:'g',     ug:1   },
-  { name:'White bread',       cal:265, p:9.0,  c:49,  f:3.2,  cat:'Bread & Grains',  unit:'slice', ug:35  },
-  { name:'Whole wheat bread', cal:247, p:13,   c:41,  f:4.2,  cat:'Bread & Grains',  unit:'slice', ug:35  },
-  { name:'Bagel',             cal:257, p:10,   c:50,  f:1.6,  cat:'Bread & Grains',  unit:'pcs',   ug:100 },
-  { name:'Tortilla wrap',     cal:306, p:8.0,  c:52,  f:7.5,  cat:'Bread & Grains',  unit:'pcs',   ug:45  },
-  { name:'White rice (cooked)',cal:130,p:2.7,  c:28,  f:0.3,  cat:'Bread & Grains',  unit:'g',     ug:1   },
-  { name:'Brown rice (cooked)',cal:123,p:2.6,  c:26,  f:0.9,  cat:'Bread & Grains',  unit:'g',     ug:1   },
-  { name:'Pasta (cooked)',    cal:158, p:6.0,  c:31,  f:0.9,  cat:'Bread & Grains',  unit:'g',     ug:1   },
-  { name:'Oats',              cal:389, p:17,   c:66,  f:7.0,  cat:'Bread & Grains',  unit:'g',     ug:1   },
-  { name:'Cornflakes',        cal:357, p:8.0,  c:79,  f:0.9,  cat:'Bread & Grains',  unit:'g',     ug:1   },
-  { name:'Potato (boiled)',   cal:87,  p:1.9,  c:20,  f:0.1,  cat:'Bread & Grains',  unit:'g',     ug:1   },
-  { name:'French fries',      cal:312, p:3.4,  c:41,  f:15,   cat:'Bread & Grains',  unit:'g',     ug:1   },
-  { name:'Avocado',           cal:160, p:2.0,  c:9.0, f:15,   cat:'Vegetables',      unit:'pcs',   ug:150 },
-  { name:'Broccoli',          cal:34,  p:2.8,  c:7.0, f:0.4,  cat:'Vegetables',      unit:'g',     ug:1   },
-  { name:'Carrot',            cal:41,  p:0.9,  c:10,  f:0.2,  cat:'Vegetables',      unit:'pcs',   ug:80  },
-  { name:'Tomato',            cal:18,  p:0.9,  c:3.9, f:0.2,  cat:'Vegetables',      unit:'pcs',   ug:120 },
-  { name:'Cucumber',          cal:15,  p:0.7,  c:3.6, f:0.1,  cat:'Vegetables',      unit:'g',     ug:1   },
-  { name:'Lettuce',           cal:15,  p:1.4,  c:2.9, f:0.2,  cat:'Vegetables',      unit:'g',     ug:1   },
-  { name:'Spinach',           cal:23,  p:2.9,  c:3.6, f:0.4,  cat:'Vegetables',      unit:'g',     ug:1   },
-  { name:'Sweet potato',      cal:86,  p:1.6,  c:20,  f:0.1,  cat:'Vegetables',      unit:'g',     ug:1   },
-  { name:'Onion',             cal:40,  p:1.1,  c:9.3, f:0.1,  cat:'Vegetables',      unit:'pcs',   ug:100 },
-  { name:'Bell pepper',       cal:31,  p:1.0,  c:6.0, f:0.3,  cat:'Vegetables',      unit:'pcs',   ug:120 },
-  { name:'Corn (cooked)',     cal:96,  p:3.4,  c:21,  f:1.5,  cat:'Vegetables',      unit:'g',     ug:1   },
-  { name:'Mushrooms',         cal:22,  p:3.1,  c:3.3, f:0.3,  cat:'Vegetables',      unit:'g',     ug:1   },
-  { name:'Apple',             cal:52,  p:0.3,  c:14,  f:0.2,  cat:'Fruits',          unit:'pcs',   ug:180 },
-  { name:'Banana',            cal:89,  p:1.1,  c:23,  f:0.3,  cat:'Fruits',          unit:'pcs',   ug:120 },
-  { name:'Orange',            cal:47,  p:0.9,  c:12,  f:0.1,  cat:'Fruits',          unit:'pcs',   ug:150 },
-  { name:'Strawberry',        cal:32,  p:0.7,  c:7.7, f:0.3,  cat:'Fruits',          unit:'pcs',   ug:12  },
-  { name:'Grapes',            cal:69,  p:0.7,  c:18,  f:0.2,  cat:'Fruits',          unit:'g',     ug:1   },
-  { name:'Mango',             cal:60,  p:0.8,  c:15,  f:0.4,  cat:'Fruits',          unit:'pcs',   ug:200 },
-  { name:'Blueberry',         cal:57,  p:0.7,  c:14,  f:0.3,  cat:'Fruits',          unit:'g',     ug:1   },
-  { name:'Watermelon',        cal:30,  p:0.6,  c:7.6, f:0.2,  cat:'Fruits',          unit:'g',     ug:1   },
-  { name:'Pineapple',         cal:50,  p:0.5,  c:13,  f:0.1,  cat:'Fruits',          unit:'g',     ug:1   },
-  { name:'Orange juice',      cal:45,  p:0.7,  c:10,  f:0.2,  cat:'Drinks',          unit:'glass', ug:200 },
-  { name:'Apple juice',       cal:46,  p:0.1,  c:11,  f:0.1,  cat:'Drinks',          unit:'glass', ug:200 },
-  { name:'Coca-Cola',         cal:42,  p:0,    c:11,  f:0,    cat:'Drinks',          unit:'glass', ug:200 },
-  { name:'Whole milk',        cal:61,  p:3.2,  c:4.8, f:3.3,  cat:'Drinks',          unit:'glass', ug:200 },
-  { name:'Skimmed milk',      cal:35,  p:3.4,  c:5.0, f:0.1,  cat:'Drinks',          unit:'glass', ug:200 },
-  { name:'Coffee (black)',    cal:2,   p:0.3,  c:0,   f:0,    cat:'Drinks',          unit:'cup',   ug:240 },
-  { name:'Coffee w/ milk',    cal:19,  p:0.9,  c:1.9, f:0.9,  cat:'Drinks',          unit:'cup',   ug:240 },
-  { name:'Smoothie (fruit)',  cal:60,  p:0.7,  c:14,  f:0.3,  cat:'Drinks',          unit:'glass', ug:250 },
-  { name:'Peanut butter',     cal:588, p:25,   c:20,  f:50,   cat:'Snacks & Other',  unit:'tbsp',  ug:16  },
-  { name:'Almonds',           cal:579, p:21,   c:22,  f:50,   cat:'Snacks & Other',  unit:'g',     ug:1   },
-  { name:'Walnuts',           cal:654, p:15,   c:14,  f:65,   cat:'Snacks & Other',  unit:'g',     ug:1   },
-  { name:'Dark chocolate',    cal:546, p:5.0,  c:60,  f:31,   cat:'Snacks & Other',  unit:'g',     ug:1   },
-  { name:'Milk chocolate',    cal:535, p:8.0,  c:59,  f:30,   cat:'Snacks & Other',  unit:'g',     ug:1   },
-  { name:'Potato chips',      cal:536, p:7.0,  c:53,  f:35,   cat:'Snacks & Other',  unit:'g',     ug:1   },
-  { name:'Olive oil',         cal:884, p:0,    c:0,   f:100,  cat:'Snacks & Other',  unit:'tbsp',  ug:14  },
-  { name:'Ketchup',           cal:112, p:1.4,  c:27,  f:0.1,  cat:'Snacks & Other',  unit:'tbsp',  ug:17  },
-  { name:'Mayonnaise',        cal:680, p:1.0,  c:0.6, f:75,   cat:'Snacks & Other',  unit:'tbsp',  ug:14  },
-  { name:'Hummus',            cal:166, p:8.0,  c:14,  f:10,   cat:'Snacks & Other',  unit:'tbsp',  ug:30  },
+  { name:'Egg, whole',         cal:155, p:13,  c:1.1, f:11,  cat:'Eggs & Dairy',   unit:'pcs',   ug:60  },
+  { name:'Egg white',          cal:52,  p:11,  c:0.7, f:0.2, cat:'Eggs & Dairy',   unit:'pcs',   ug:30  },
+  { name:'Milk, whole',        cal:61,  p:3.2, c:4.8, f:3.3, cat:'Eggs & Dairy',   unit:'glass', ug:200 },
+  { name:'Milk, skimmed',      cal:35,  p:3.4, c:5.0, f:0.1, cat:'Eggs & Dairy',   unit:'glass', ug:200 },
+  { name:'Cheddar cheese',     cal:403, p:25,  c:1.3, f:33,  cat:'Eggs & Dairy',   unit:'g',     ug:1   },
+  { name:'Mozzarella',         cal:280, p:22,  c:2.2, f:17,  cat:'Eggs & Dairy',   unit:'g',     ug:1   },
+  { name:'Cottage cheese',     cal:98,  p:11,  c:3.4, f:4.3, cat:'Eggs & Dairy',   unit:'g',     ug:1   },
+  { name:'Cream cheese',       cal:342, p:6.0, c:4.1, f:34,  cat:'Eggs & Dairy',   unit:'tbsp',  ug:15  },
+  { name:'Greek yogurt',       cal:59,  p:10,  c:3.6, f:0.4, cat:'Eggs & Dairy',   unit:'g',     ug:1   },
+  { name:'Natural yogurt',     cal:61,  p:3.5, c:4.7, f:3.3, cat:'Eggs & Dairy',   unit:'g',     ug:1   },
+  { name:'Butter',             cal:717, p:0.9, c:0.1, f:81,  cat:'Eggs & Dairy',   unit:'tbsp',  ug:14  },
+  { name:'Sour cream',         cal:193, p:2.1, c:4.6, f:19,  cat:'Eggs & Dairy',   unit:'tbsp',  ug:15  },
+  { name:'Chicken breast',     cal:165, p:31,  c:0,   f:3.6, cat:'Meat & Fish',    unit:'g',     ug:1   },
+  { name:'Chicken thigh',      cal:209, p:26,  c:0,   f:11,  cat:'Meat & Fish',    unit:'g',     ug:1   },
+  { name:'Turkey breast',      cal:135, p:30,  c:0,   f:1.0, cat:'Meat & Fish',    unit:'g',     ug:1   },
+  { name:'Beef mince (lean)',  cal:215, p:26,  c:0,   f:12,  cat:'Meat & Fish',    unit:'g',     ug:1   },
+  { name:'Beef steak',         cal:271, p:26,  c:0,   f:18,  cat:'Meat & Fish',    unit:'g',     ug:1   },
+  { name:'Pork chop',          cal:231, p:28,  c:0,   f:13,  cat:'Meat & Fish',    unit:'g',     ug:1   },
+  { name:'Ham',                cal:145, p:21,  c:1.5, f:6.0, cat:'Meat & Fish',    unit:'slice', ug:30  },
+  { name:'Bacon',              cal:541, p:37,  c:1.4, f:42,  cat:'Meat & Fish',    unit:'slice', ug:15  },
+  { name:'Sausage',            cal:301, p:11,  c:3.0, f:27,  cat:'Meat & Fish',    unit:'pcs',   ug:50  },
+  { name:'Salmon',             cal:208, p:20,  c:0,   f:13,  cat:'Meat & Fish',    unit:'g',     ug:1   },
+  { name:'Tuna (canned)',      cal:116, p:26,  c:0,   f:1.0, cat:'Meat & Fish',    unit:'g',     ug:1   },
+  { name:'Cod',                cal:82,  p:18,  c:0,   f:0.7, cat:'Meat & Fish',    unit:'g',     ug:1   },
+  { name:'Shrimp',             cal:99,  p:24,  c:0.2, f:0.3, cat:'Meat & Fish',    unit:'g',     ug:1   },
+  { name:'Mackerel',           cal:205, p:19,  c:0,   f:14,  cat:'Meat & Fish',    unit:'g',     ug:1   },
+  { name:'White bread',        cal:265, p:9.0, c:49,  f:3.2, cat:'Bread & Grains', unit:'slice', ug:35  },
+  { name:'Whole wheat bread',  cal:247, p:13,  c:41,  f:4.2, cat:'Bread & Grains', unit:'slice', ug:35  },
+  { name:'Bagel',              cal:257, p:10,  c:50,  f:1.6, cat:'Bread & Grains', unit:'pcs',   ug:100 },
+  { name:'Tortilla wrap',      cal:306, p:8.0, c:52,  f:7.5, cat:'Bread & Grains', unit:'pcs',   ug:45  },
+  { name:'White rice (cooked)',cal:130, p:2.7, c:28,  f:0.3, cat:'Bread & Grains', unit:'g',     ug:1   },
+  { name:'Brown rice (cooked)',cal:123, p:2.6, c:26,  f:0.9, cat:'Bread & Grains', unit:'g',     ug:1   },
+  { name:'Pasta (cooked)',     cal:158, p:6.0, c:31,  f:0.9, cat:'Bread & Grains', unit:'g',     ug:1   },
+  { name:'Oats',               cal:389, p:17,  c:66,  f:7.0, cat:'Bread & Grains', unit:'g',     ug:1   },
+  { name:'Cornflakes',         cal:357, p:8.0, c:79,  f:0.9, cat:'Bread & Grains', unit:'g',     ug:1   },
+  { name:'Potato (boiled)',    cal:87,  p:1.9, c:20,  f:0.1, cat:'Bread & Grains', unit:'g',     ug:1   },
+  { name:'French fries',       cal:312, p:3.4, c:41,  f:15,  cat:'Bread & Grains', unit:'g',     ug:1   },
+  { name:'Avocado',            cal:160, p:2.0, c:9.0, f:15,  cat:'Vegetables',     unit:'pcs',   ug:150 },
+  { name:'Broccoli',           cal:34,  p:2.8, c:7.0, f:0.4, cat:'Vegetables',     unit:'g',     ug:1   },
+  { name:'Carrot',             cal:41,  p:0.9, c:10,  f:0.2, cat:'Vegetables',     unit:'pcs',   ug:80  },
+  { name:'Tomato',             cal:18,  p:0.9, c:3.9, f:0.2, cat:'Vegetables',     unit:'pcs',   ug:120 },
+  { name:'Cucumber',           cal:15,  p:0.7, c:3.6, f:0.1, cat:'Vegetables',     unit:'g',     ug:1   },
+  { name:'Lettuce',            cal:15,  p:1.4, c:2.9, f:0.2, cat:'Vegetables',     unit:'g',     ug:1   },
+  { name:'Spinach',            cal:23,  p:2.9, c:3.6, f:0.4, cat:'Vegetables',     unit:'g',     ug:1   },
+  { name:'Sweet potato',       cal:86,  p:1.6, c:20,  f:0.1, cat:'Vegetables',     unit:'g',     ug:1   },
+  { name:'Onion',              cal:40,  p:1.1, c:9.3, f:0.1, cat:'Vegetables',     unit:'pcs',   ug:100 },
+  { name:'Bell pepper',        cal:31,  p:1.0, c:6.0, f:0.3, cat:'Vegetables',     unit:'pcs',   ug:120 },
+  { name:'Corn (cooked)',      cal:96,  p:3.4, c:21,  f:1.5, cat:'Vegetables',     unit:'g',     ug:1   },
+  { name:'Mushrooms',          cal:22,  p:3.1, c:3.3, f:0.3, cat:'Vegetables',     unit:'g',     ug:1   },
+  { name:'Apple',              cal:52,  p:0.3, c:14,  f:0.2, cat:'Fruits',         unit:'pcs',   ug:180 },
+  { name:'Banana',             cal:89,  p:1.1, c:23,  f:0.3, cat:'Fruits',         unit:'pcs',   ug:120 },
+  { name:'Orange',             cal:47,  p:0.9, c:12,  f:0.1, cat:'Fruits',         unit:'pcs',   ug:150 },
+  { name:'Strawberry',         cal:32,  p:0.7, c:7.7, f:0.3, cat:'Fruits',         unit:'pcs',   ug:12  },
+  { name:'Grapes',             cal:69,  p:0.7, c:18,  f:0.2, cat:'Fruits',         unit:'g',     ug:1   },
+  { name:'Mango',              cal:60,  p:0.8, c:15,  f:0.4, cat:'Fruits',         unit:'pcs',   ug:200 },
+  { name:'Blueberry',          cal:57,  p:0.7, c:14,  f:0.3, cat:'Fruits',         unit:'g',     ug:1   },
+  { name:'Watermelon',         cal:30,  p:0.6, c:7.6, f:0.2, cat:'Fruits',         unit:'g',     ug:1   },
+  { name:'Pineapple',          cal:50,  p:0.5, c:13,  f:0.1, cat:'Fruits',         unit:'g',     ug:1   },
+  // Drinks — ug = ml per unit (density ≈ 1 g/ml for all drinks here)
+  { name:'Water',              cal:0,   p:0,   c:0,   f:0,   cat:'Drinks',         unit:'glass', ug:250 },
+  { name:'Orange juice',       cal:45,  p:0.7, c:10,  f:0.2, cat:'Drinks',         unit:'glass', ug:200 },
+  { name:'Apple juice',        cal:46,  p:0.1, c:11,  f:0.1, cat:'Drinks',         unit:'glass', ug:200 },
+  { name:'Coca-Cola',          cal:42,  p:0,   c:11,  f:0,   cat:'Drinks',         unit:'glass', ug:200 },
+  { name:'Whole milk',         cal:61,  p:3.2, c:4.8, f:3.3, cat:'Drinks',         unit:'glass', ug:200 },
+  { name:'Skimmed milk',       cal:35,  p:3.4, c:5.0, f:0.1, cat:'Drinks',         unit:'glass', ug:200 },
+  { name:'Coffee (black)',     cal:2,   p:0.3, c:0,   f:0,   cat:'Drinks',         unit:'cup',   ug:240 },
+  { name:'Coffee w/ milk',     cal:19,  p:0.9, c:1.9, f:0.9, cat:'Drinks',         unit:'cup',   ug:240 },
+  { name:'Smoothie (fruit)',   cal:60,  p:0.7, c:14,  f:0.3, cat:'Drinks',         unit:'glass', ug:250 },
+  { name:'Beer (lager)',        cal:43,  p:0.5, c:3.5, f:0,   cat:'Drinks',         unit:'cl',    ug:10  },
+  { name:'Beer (strong/IPA)',  cal:65,  p:0.6, c:5.5, f:0,   cat:'Drinks',         unit:'cl',    ug:10  },
+  { name:'Wine (red)',         cal:85,  p:0.1, c:2.6, f:0,   cat:'Drinks',         unit:'cl',    ug:10  },
+  { name:'Wine (white)',       cal:82,  p:0.1, c:2.6, f:0,   cat:'Drinks',         unit:'cl',    ug:10  },
+  { name:'Wine (rosé)',        cal:83,  p:0.1, c:2.6, f:0,   cat:'Drinks',         unit:'cl',    ug:10  },
+  { name:'Peanut butter',      cal:588, p:25,  c:20,  f:50,  cat:'Snacks & Other', unit:'tbsp',  ug:16  },
+  { name:'Almonds',            cal:579, p:21,  c:22,  f:50,  cat:'Snacks & Other', unit:'g',     ug:1   },
+  { name:'Walnuts',            cal:654, p:15,  c:14,  f:65,  cat:'Snacks & Other', unit:'g',     ug:1   },
+  { name:'Dark chocolate',     cal:546, p:5.0, c:60,  f:31,  cat:'Snacks & Other', unit:'g',     ug:1   },
+  { name:'Milk chocolate',     cal:535, p:8.0, c:59,  f:30,  cat:'Snacks & Other', unit:'g',     ug:1   },
+  { name:'Potato chips',       cal:536, p:7.0, c:53,  f:35,  cat:'Snacks & Other', unit:'g',     ug:1   },
+  { name:'Olive oil',          cal:884, p:0,   c:0,   f:100, cat:'Snacks & Other', unit:'tbsp',  ug:14  },
+  { name:'Ketchup',            cal:112, p:1.4, c:27,  f:0.1, cat:'Snacks & Other', unit:'tbsp',  ug:17  },
+  { name:'Mayonnaise',         cal:680, p:1.0, c:0.6, f:75,  cat:'Snacks & Other', unit:'tbsp',  ug:14  },
+  { name:'Hummus',             cal:166, p:8.0, c:14,  f:10,  cat:'Snacks & Other', unit:'tbsp',  ug:30  },
 ];
 
-const UNIT_LABELS   = { g:'g', pcs:'pcs', glass:'glass', slice:'slice', tbsp:'tbsp', cup:'cup' };
+const UNIT_LABELS    = { g:'g', pcs:'pcs', glass:'glass', slice:'slice', tbsp:'tbsp', cup:'cup', cl:'cl' };
 const ALL_CATEGORIES = ['All', ...new Set(FOOD_LIBRARY.map(f => f.cat))];
-let activeCategory  = 'All';
-let selectedFood    = null;
-let histChart       = null;
+let activeCategory   = 'All';
+let selectedFood     = null;
+let histChart        = null;
+let currentDate      = todayISO();
 
 // ── Helpers ──────────────────────────────────────────────────────
 function todayISO() { return new Date().toISOString().split('T')[0]; }
 function r1(n) { return Math.round(n * 10) / 10; }
 function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function cssVar(name) { return getComputedStyle(document.body).getPropertyValue(name).trim(); }
-
 function fmtLabel(iso) {
   const [y,m,d] = iso.split('-').map(Number);
   const dt = new Date(y, m-1, d);
@@ -416,8 +475,6 @@ function fmtLabel(iso) {
   if (iso === yest.toISOString().split('T')[0]) return 'Yesterday';
   return dt.toLocaleDateString(undefined, { weekday:'short', month:'short', day:'numeric' });
 }
-
-let currentDate = todayISO();
 
 // ── Navigation ───────────────────────────────────────────────────
 function showPage(name, btn) {
@@ -434,6 +491,7 @@ function changeDay(delta) {
   d.setDate(d.getDate() + delta);
   currentDate = d.toISOString().split('T')[0];
   renderToday();
+  renderWater();
 }
 
 // ── Goal ─────────────────────────────────────────────────────────
@@ -444,12 +502,47 @@ function saveGoal() {
   renderToday();
 }
 
+// ── Water tracker ────────────────────────────────────────────────
+const WATER_GOAL_DEFAULT = 2000;
+const GLASS_ML = 250;
+
+function addWater(ml) {
+  const w = loadWater();
+  w[currentDate] = Math.max(0, (w[currentDate] || 0) + ml);
+  saveWater(w);
+  renderWater();
+}
+
+function addWaterCustom() {
+  const v = parseInt(document.getElementById('waterCustom').value);
+  if (!v || v <= 0) return;
+  addWater(v);
+  document.getElementById('waterCustom').value = '';
+}
+
+function renderWater() {
+  const goal = getWaterGoal();
+  const ml   = (loadWater()[currentDate]) || 0;
+  const pct  = Math.min(ml / goal * 100, 100);
+  const glasses = Math.floor(ml / GLASS_ML);
+  const totalDrops = Math.ceil(goal / GLASS_ML);
+
+  document.getElementById('waterMl').textContent       = ml;
+  document.getElementById('waterGoalDisplay').textContent = goal;
+  document.getElementById('waterFill').style.width     = pct + '%';
+
+  const dropsEl = document.getElementById('waterGlasses');
+  dropsEl.innerHTML = Array.from({ length: totalDrops }, (_, i) =>
+    `<span class="water-drop${i < glasses ? ' filled' : ''}">💧</span>`
+  ).join('');
+}
+
 // ── Today ────────────────────────────────────────────────────────
 function renderToday() {
-  const goal = getGoal();
-  document.getElementById('dateLabel').textContent = fmtLabel(currentDate);
-  document.getElementById('goalDisplay').textContent = goal;
-  document.getElementById('goalInput').value = goal;
+  const goal  = getGoal();
+  document.getElementById('dateLabel').textContent    = fmtLabel(currentDate);
+  document.getElementById('goalDisplay').textContent  = goal;
+  document.getElementById('goalInput').value          = goal;
 
   const meals = (loadData()[currentDate]) || [];
   const list  = document.getElementById('mealsList');
@@ -462,7 +555,7 @@ function renderToday() {
       </div>
       <div class="meal-right">
         <span class="meal-cal">${Math.round(m.calories)} kcal</span>
-        <button class="btn-del" onclick="deleteMeal(${i})" title="Remove">&#x2715;</button>
+        <button class="btn-del" onclick="deleteMeal(${i})">&#x2715;</button>
       </div>
     </div>`).join('') : '<div class="empty">No meals logged yet.</div>';
 
@@ -524,8 +617,9 @@ function onLibrarySelect() {
   const idx = document.getElementById('librarySelect').value;
   if (!idx) { document.getElementById('libPreviewRow').style.display='none'; document.getElementById('libraryUnitBadge').textContent='—'; return; }
   const food = FOOD_LIBRARY[parseInt(idx)];
-  document.getElementById('libraryAmount').value = food.unit === 'g' ? 100 : 1;
-  document.getElementById('libraryAmount').step  = food.unit === 'g' ? 10 : 1;
+  const defaultAmt = food.unit === 'g' ? 100 : food.unit === 'cl' ? 33 : 1;
+  document.getElementById('libraryAmount').value = defaultAmt;
+  document.getElementById('libraryAmount').step  = food.unit === 'g' ? 10 : food.unit === 'cl' ? 1 : 1;
   document.getElementById('libraryUnitBadge').textContent = UNIT_LABELS[food.unit] || food.unit;
   document.getElementById('libPreviewRow').style.display = 'flex';
   updateLibraryPreview();
@@ -534,7 +628,7 @@ function onLibrarySelect() {
 function updateLibraryPreview() {
   const idx = document.getElementById('librarySelect').value;
   if (!idx) return;
-  const food = FOOD_LIBRARY[parseInt(idx)];
+  const food  = FOOD_LIBRARY[parseInt(idx)];
   const grams = (parseFloat(document.getElementById('libraryAmount').value)||0) * food.ug;
   const fac   = grams / 100;
   document.getElementById('libCalNum').textContent    = Math.round(food.cal * fac);
@@ -614,7 +708,7 @@ async function doOnlineSearch() {
       const name = (p.product_name||'').trim(); if (!name) continue;
       const n = p.nutriments||{};
       const cal = n['energy-kcal_100g'] ?? n['energy-kcal_serving']; if (cal==null) continue;
-      items.push({ name: name+(p.brands?' — '+p.brands:''), cal:r1(parseFloat(cal)),
+      items.push({ name:name+(p.brands?' — '+p.brands:''), cal:r1(parseFloat(cal)),
         p:r1(parseFloat(n.proteins_100g)||0), c:r1(parseFloat(n.carbohydrates_100g)||0), f:r1(parseFloat(n.fat_100g)||0) });
       if (items.length>=12) break;
     }
@@ -637,7 +731,7 @@ function selectFood(i) {
 
 function updateLogPreview() {
   if (!selectedFood) return;
-  const g = parseFloat(document.getElementById('logGrams').value)||0, fac=g/100;
+  const g=parseFloat(document.getElementById('logGrams').value)||0, fac=g/100;
   document.getElementById('logCalPreview').value  = Math.round(selectedFood.calories_per_100g*fac);
   document.getElementById('logProtPreview').value = r1(selectedFood.protein*fac);
   document.getElementById('logCarbPreview').value = r1(selectedFood.carbs*fac);
@@ -646,7 +740,7 @@ function updateLogPreview() {
 
 function logSelectedFood() {
   if (!selectedFood) return;
-  const g = parseFloat(document.getElementById('logGrams').value)||0, fac=g/100;
+  const g=parseFloat(document.getElementById('logGrams').value)||0, fac=g/100;
   const data=loadData(), today=todayISO();
   if (!data[today]) data[today]=[];
   data[today].push({ name:selectedFood.name.split(' — ')[0]+' ('+g+'g)', calories:r1(selectedFood.calories_per_100g*fac),
@@ -658,22 +752,21 @@ function logSelectedFood() {
 }
 
 // ── History ──────────────────────────────────────────────────────
-function chartColors(values, goal) {
+function chartColors() {
   const dark = document.body.classList.contains('dark');
-  return { ok: dark ? '#4ade80' : '#68d391', over: dark ? '#f87171' : '#fc8181', line: '#2d6a4f',
-           grid: dark ? '#334155' : '#e2e8f0', tick: dark ? '#94a3b8' : '#718096' };
+  return { ok:dark?'#4ade80':'#68d391', over:dark?'#f87171':'#fc8181', line:'#2d6a4f',
+           grid:dark?'#334155':'#e2e8f0', tick:dark?'#94a3b8':'#718096' };
 }
 
 function refreshChartColors() {
   if (!histChart) return;
-  const goal   = getGoal();
-  const colors = chartColors(histChart.data.datasets[0].data, goal);
-  histChart.data.datasets[0].backgroundColor = histChart.data.datasets[0].data.map(v => v > goal ? colors.over : colors.ok);
-  histChart.data.datasets[1].borderColor = colors.line;
-  histChart.options.scales.x.ticks.color = colors.tick;
-  histChart.options.scales.y.ticks.color = colors.tick;
-  histChart.options.scales.x.grid.color  = colors.grid;
-  histChart.options.scales.y.grid.color  = colors.grid;
+  const goal=getGoal(), c=chartColors();
+  histChart.data.datasets[0].backgroundColor = histChart.data.datasets[0].data.map(v => v>goal?c.over:c.ok);
+  histChart.data.datasets[1].borderColor = c.line;
+  histChart.options.scales.x.ticks.color = c.tick;
+  histChart.options.scales.y.ticks.color = c.tick;
+  histChart.options.scales.x.grid.color  = c.grid;
+  histChart.options.scales.y.grid.color  = c.grid;
   histChart.update();
 }
 
@@ -686,19 +779,18 @@ function renderChart(days, btn) {
     labels.push(d.toLocaleDateString(undefined,{month:'short',day:'numeric'}));
     values.push(r1((data[d.toISOString().split('T')[0]]||[]).reduce((s,m)=>s+m.calories,0)));
   }
-  const colors = chartColors(values, goal);
+  const c=chartColors();
   if (histChart) histChart.destroy();
   histChart = new Chart(document.getElementById('historyChart').getContext('2d'), {
-    type:'bar',
-    data:{ labels, datasets:[
-      { label:'Calories', data:values, backgroundColor:values.map(v=>v>goal?colors.over:colors.ok), borderRadius:6 },
-      { label:'Goal', data:Array(days).fill(goal), type:'line', borderColor:colors.line, borderDash:[5,4], borderWidth:2, pointRadius:0, fill:false },
+    type:'bar', data:{ labels, datasets:[
+      { label:'Calories', data:values, backgroundColor:values.map(v=>v>goal?c.over:c.ok), borderRadius:6 },
+      { label:'Goal', data:Array(days).fill(goal), type:'line', borderColor:c.line, borderDash:[5,4], borderWidth:2, pointRadius:0, fill:false },
     ]},
     options:{ responsive:true,
       plugins:{ legend:{position:'top'}, tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+ctx.parsed.y+' kcal'}} },
       scales:{
-        y:{ beginAtZero:true, ticks:{color:colors.tick,callback:v=>v+' kcal'}, grid:{color:colors.grid} },
-        x:{ ticks:{color:colors.tick,maxRotation:45}, grid:{color:colors.grid} },
+        y:{ beginAtZero:true, ticks:{color:c.tick,callback:v=>v+' kcal'}, grid:{color:c.grid} },
+        x:{ ticks:{color:c.tick,maxRotation:45}, grid:{color:c.grid} },
       },
     },
   });
@@ -710,6 +802,7 @@ buildLibrarySelect();
 initCategoryChips();
 filterLibrary();
 renderToday();
+renderWater();
 </script>
 </body>
 </html>
