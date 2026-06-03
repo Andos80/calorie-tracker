@@ -283,6 +283,18 @@
     <button class="btn-primary" onclick="addFromLibrary()">Add to Today</button>
   </div>
 
+  <!-- Export / Import -->
+  <div class="add-card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem">
+    <div>
+      <div style="font-size:.95rem;font-weight:600;margin-bottom:.2rem">Your data</div>
+      <div style="font-size:.78rem;color:var(--muted)">Back up your meals &amp; water, or restore from a previous backup.</div>
+    </div>
+    <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+      <button class="btn-primary" style="margin-top:0" onclick="exportData()">⬇ Export</button>
+      <button class="btn-secondary" onclick="importData()">⬆ Import</button>
+    </div>
+  </div>
+
   <!-- Manual add -->
   <div class="add-card">
     <h3>Add manually</h3>
@@ -798,6 +810,51 @@ function renderChart(days, btn) {
       },
     },
   });
+}
+
+// ── Export / Import ──────────────────────────────────────────────
+function exportData() {
+  const payload = {
+    meals:      loadData(),
+    water:      loadWater(),
+    goal:       getGoal(),
+    water_goal: getWaterGoal(),
+    exported_at: new Date().toISOString(),
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `calorie-tracker-${todayISO()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importData() {
+  const input  = document.createElement('input');
+  input.type   = 'file';
+  input.accept = '.json';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const d = JSON.parse(ev.target.result);
+        if (d.meals)      saveData(d.meals);
+        if (d.water)      saveWater(d.water);
+        if (d.goal)       setGoal(d.goal);
+        if (d.water_goal) localStorage.setItem(WGOAL_KEY, String(d.water_goal));
+        renderToday();
+        renderWater();
+        alert('Data imported successfully!');
+      } catch {
+        alert('Could not read file. Please select a valid Calorie Tracker backup.');
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
 }
 
 // ── Init ─────────────────────────────────────────────────────────
