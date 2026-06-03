@@ -211,6 +211,17 @@
   .period-btn { background: var(--surface2); border: none; border-radius: 8px; padding: 0.35rem 0.85rem; cursor: pointer; font-size: 0.82rem; font-weight: 500; color: var(--text); }
   .period-btn.active { background: var(--accent); color: #fff; }
 
+  /* Weight */
+  .weight-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 0.75rem; margin-bottom: 1rem; }
+  .wstat { background: var(--surface); border-radius: 12px; padding: 0.9rem 0.75rem; box-shadow: 0 1px 3px var(--shadow); text-align: center; }
+  .wstat span { display: block; font-size: 0.72rem; color: var(--muted); margin-bottom: 0.3rem; }
+  .wstat strong { font-size: 1.05rem; font-weight: 700; }
+  .wstat strong.loss { color: var(--accent-text); }
+  .wstat strong.gain { color: var(--danger); }
+  .weight-diff { font-size: 0.75rem; margin-left: 0.3rem; }
+  .weight-diff.loss { color: var(--accent-text); }
+  .weight-diff.gain { color: var(--danger); }
+
   /* ── Mobile ── */
   @media (max-width: 600px) {
     /* Header — stack goal edit below title */
@@ -269,6 +280,8 @@
 
     /* History */
     .chart-card { padding: 1rem; }
+    /* Weight stats — 2×2 on mobile */
+    .weight-stats { grid-template-columns: repeat(2,1fr); }
   }
 </style>
 </head>
@@ -287,6 +300,7 @@
 
 <nav>
   <button class="active" onclick="showPage('today', this)">Today</button>
+  <button onclick="showPage('weight', this)">Weight</button>
   <button onclick="showPage('search', this)">Search Food</button>
   <button onclick="showPage('calendar', this)">Calendar</button>
   <button onclick="showPage('history', this)">History</button>
@@ -402,6 +416,55 @@
   </div>
 </div>
 
+<!-- WEIGHT -->
+<div id="page-weight" class="page">
+
+  <!-- Log form -->
+  <div class="add-card">
+    <h3>Log weight</h3>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" id="weightDate" />
+      </div>
+      <div class="form-group">
+        <label>Weight (kg)</label>
+        <input type="number" id="weightInput" min="20" max="300" step="0.1" placeholder="e.g. 82.5" />
+      </div>
+      <div class="form-group">
+        <label>Goal weight (kg)</label>
+        <input type="number" id="weightGoalInput" min="20" max="300" step="0.1" placeholder="optional" />
+      </div>
+    </div>
+    <button class="btn-primary" onclick="logWeight()">Save weight</button>
+  </div>
+
+  <!-- Stats -->
+  <div class="weight-stats" id="weightStats" style="display:none">
+    <div class="wstat"><span>Starting</span><strong id="wStatStart">—</strong></div>
+    <div class="wstat"><span>Current</span><strong id="wStatCurrent">—</strong></div>
+    <div class="wstat"><span>Total change</span><strong id="wStatChange">—</strong></div>
+    <div class="wstat"><span>Goal</span><strong id="wStatGoal">—</strong></div>
+  </div>
+
+  <!-- Chart -->
+  <div class="chart-card" id="weightChartCard" style="display:none;margin-bottom:1rem">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+      <h3 style="font-size:.95rem;font-weight:600">Weight over time</h3>
+      <div class="period-btns" id="weightPeriodBtns">
+        <button class="period-btn active" onclick="renderWeightChart(30,this)">1M</button>
+        <button class="period-btn" onclick="renderWeightChart(90,this)">3M</button>
+        <button class="period-btn" onclick="renderWeightChart(180,this)">6M</button>
+        <button class="period-btn" onclick="renderWeightChart(0,this)">All</button>
+      </div>
+    </div>
+    <canvas id="weightChart"></canvas>
+  </div>
+
+  <!-- History list -->
+  <div class="meals-list" id="weightHistory"></div>
+</div>
+
 <!-- SEARCH -->
 <div id="page-search" class="page">
   <div class="search-bar">
@@ -458,13 +521,18 @@
 
 <script>
 // ── Storage ──────────────────────────────────────────────────────
-const MEALS_KEY = 'ct_meals';
-const GOAL_KEY  = 'ct_goal';
-const DARK_KEY  = 'ct_dark';
-const WATER_KEY = 'ct_water';
-const WGOAL_KEY = 'ct_water_goal';
+const MEALS_KEY   = 'ct_meals';
+const GOAL_KEY    = 'ct_goal';
+const DARK_KEY    = 'ct_dark';
+const WATER_KEY   = 'ct_water';
+const WGOAL_KEY   = 'ct_water_goal';
+const WEIGHT_KEY  = 'ct_weight';
+const WGOAL_WEIGHT_KEY = 'ct_weight_goal';
 
-function loadData()  { try { return JSON.parse(localStorage.getItem(MEALS_KEY))  || {}; } catch { return {}; } }
+function loadData()    { try { return JSON.parse(localStorage.getItem(MEALS_KEY))   || {}; } catch { return {}; } }
+function loadWeights() { try { return JSON.parse(localStorage.getItem(WEIGHT_KEY)) || []; } catch { return []; } }
+function saveWeights(a){ localStorage.setItem(WEIGHT_KEY, JSON.stringify(a)); }
+function getWeightGoal(){ return parseFloat(localStorage.getItem(WGOAL_WEIGHT_KEY)) || null; }
 function saveData(d) { localStorage.setItem(MEALS_KEY, JSON.stringify(d)); }
 function loadWater() { try { return JSON.parse(localStorage.getItem(WATER_KEY))  || {}; } catch { return {}; } }
 function saveWater(d){ localStorage.setItem(WATER_KEY, JSON.stringify(d)); }
@@ -604,6 +672,7 @@ function showPage(name, btn) {
   if (name === 'history')  renderChart(7, document.querySelector('.period-btn'));
   if (name === 'search')   filterLibrary();
   if (name === 'calendar') renderCalendar();
+  if (name === 'weight')   { initWeightPage(); renderWeightPage(); }
 }
 
 function changeDay(delta) {
@@ -916,6 +985,140 @@ function renderChart(days, btn) {
   });
 }
 
+// ── Weight tracking ──────────────────────────────────────────────
+let weightChart = null;
+
+function initWeightPage() {
+  document.getElementById('weightDate').value = todayISO();
+  const goal = getWeightGoal();
+  if (goal) document.getElementById('weightGoalInput').value = goal;
+}
+
+function logWeight() {
+  const date   = document.getElementById('weightDate').value;
+  const weight = parseFloat(document.getElementById('weightInput').value);
+  const goalV  = parseFloat(document.getElementById('weightGoalInput').value);
+  if (!date || isNaN(weight) || weight < 20) { alert('Please enter a valid weight.'); return; }
+  if (!isNaN(goalV) && goalV >= 20) localStorage.setItem(WGOAL_WEIGHT_KEY, String(goalV));
+
+  const arr = loadWeights();
+  const existing = arr.findIndex(w => w.date === date);
+  if (existing >= 0) arr.splice(existing, 1);
+  arr.push({ date, weight: r1(weight) });
+  arr.sort((a, b) => a.date.localeCompare(b.date));
+  saveWeights(arr);
+  document.getElementById('weightInput').value = '';
+  renderWeightPage();
+}
+
+function deleteWeight(idx) {
+  const arr = loadWeights();
+  arr.splice(idx, 1);
+  saveWeights(arr);
+  renderWeightPage();
+}
+
+function renderWeightPage() {
+  const arr   = loadWeights();
+  const goal  = getWeightGoal();
+  const statsEl     = document.getElementById('weightStats');
+  const chartCard   = document.getElementById('weightChartCard');
+  const histEl      = document.getElementById('weightHistory');
+
+  if (!arr.length) {
+    statsEl.style.display = 'none';
+    chartCard.style.display = 'none';
+    histEl.innerHTML = '<div class="empty">No entries yet. Log your first weight above.</div>';
+    return;
+  }
+
+  statsEl.style.display   = 'grid';
+  chartCard.style.display = 'block';
+
+  const first   = arr[0].weight;
+  const current = arr[arr.length - 1].weight;
+  const change  = r1(current - first);
+
+  document.getElementById('wStatStart').textContent   = first + ' kg';
+  document.getElementById('wStatCurrent').textContent = current + ' kg';
+
+  const chEl = document.getElementById('wStatChange');
+  chEl.textContent  = (change > 0 ? '+' : '') + change + ' kg';
+  chEl.className    = change < 0 ? 'loss' : change > 0 ? 'gain' : '';
+
+  const goalEl = document.getElementById('wStatGoal');
+  if (goal) {
+    const toGo = r1(current - goal);
+    goalEl.textContent = goal + ' kg';
+    goalEl.title = toGo > 0 ? `${toGo} kg to go` : 'Goal reached!';
+  } else {
+    goalEl.textContent = '—';
+  }
+
+  // History (newest first)
+  histEl.innerHTML = [...arr].reverse().map((w, i) => {
+    const realIdx = arr.length - 1 - i;
+    const prev    = realIdx > 0 ? arr[realIdx - 1].weight : null;
+    const diff    = prev !== null ? r1(w.weight - prev) : null;
+    const diffHtml = diff !== null
+      ? `<span class="weight-diff ${diff < 0 ? 'loss' : diff > 0 ? 'gain' : ''}">${diff > 0 ? '+' : ''}${diff} kg</span>`
+      : '<span class="weight-diff" style="color:var(--muted)">first entry</span>';
+    const [y,m,d] = w.date.split('-').map(Number);
+    const label = new Date(y,m-1,d).toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+    return `<div class="meal-item">
+      <div>
+        <div class="meal-name">${label}</div>
+        <div class="meal-macros">${diffHtml}</div>
+      </div>
+      <div class="meal-right">
+        <span class="meal-cal">${w.weight} kg</span>
+        <button class="btn-del" onclick="deleteWeight(${realIdx})">&#x2715;</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  const activePeriodBtn = document.querySelector('#weightPeriodBtns .period-btn.active');
+  const days = activePeriodBtn ? parseInt(activePeriodBtn.dataset.days ?? '30') : 30;
+  renderWeightChart(days);
+}
+
+function renderWeightChart(days, btn) {
+  if (btn) {
+    document.querySelectorAll('#weightPeriodBtns .period-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    btn.dataset.days = days;
+  }
+  let arr = loadWeights();
+  if (days > 0) {
+    const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - days);
+    arr = arr.filter(w => w.date >= cutoff.toISOString().split('T')[0]);
+  }
+  if (!arr.length) return;
+
+  const goal   = getWeightGoal();
+  const labels = arr.map(w => { const [y,m,d]=w.date.split('-').map(Number); return new Date(y,m-1,d).toLocaleDateString(undefined,{month:'short',day:'numeric'}); });
+  const values = arr.map(w => w.weight);
+  const c = chartColors();
+
+  if (weightChart) weightChart.destroy();
+  weightChart = new Chart(document.getElementById('weightChart').getContext('2d'), {
+    type: 'line',
+    data: { labels, datasets: [
+      { label:'Weight (kg)', data:values, borderColor:'#3b82f6', backgroundColor:'rgba(59,130,246,.1)',
+        borderWidth:2.5, pointBackgroundColor:'#3b82f6', pointRadius:5, tension:0.3, fill:true },
+      ...(goal ? [{ label:'Goal', data:Array(values.length).fill(goal), borderColor:'#2d6a4f',
+        borderDash:[5,4], borderWidth:2, pointRadius:0, fill:false }] : []),
+    ]},
+    options: { responsive:true,
+      plugins:{ legend:{position:'top'}, tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+ctx.parsed.y+' kg'}} },
+      scales:{
+        y:{ ticks:{color:c.tick,callback:v=>v+' kg'}, grid:{color:c.grid} },
+        x:{ ticks:{color:c.tick,maxRotation:45}, grid:{color:c.grid} },
+      },
+    },
+  });
+}
+
 // ── Calendar ─────────────────────────────────────────────────────
 let calYear  = new Date().getFullYear();
 let calMonth = new Date().getMonth();
@@ -974,11 +1177,13 @@ function goToDay(iso) {
 // ── Export / Import ──────────────────────────────────────────────
 function exportData() {
   const payload = {
-    meals:      loadData(),
-    water:      loadWater(),
-    goal:       getGoal(),
-    water_goal: getWaterGoal(),
-    exported_at: new Date().toISOString(),
+    meals:        loadData(),
+    water:        loadWater(),
+    goal:         getGoal(),
+    water_goal:   getWaterGoal(),
+    weights:      loadWeights(),
+    weight_goal:  getWeightGoal(),
+    exported_at:  new Date().toISOString(),
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
   const url  = URL.createObjectURL(blob);
@@ -1000,10 +1205,12 @@ function importData() {
     reader.onload = ev => {
       try {
         const d = JSON.parse(ev.target.result);
-        if (d.meals)      saveData(d.meals);
-        if (d.water)      saveWater(d.water);
-        if (d.goal)       setGoal(d.goal);
-        if (d.water_goal) localStorage.setItem(WGOAL_KEY, String(d.water_goal));
+        if (d.meals)        saveData(d.meals);
+        if (d.water)        saveWater(d.water);
+        if (d.goal)         setGoal(d.goal);
+        if (d.water_goal)   localStorage.setItem(WGOAL_KEY, String(d.water_goal));
+        if (d.weights)      saveWeights(d.weights);
+        if (d.weight_goal)  localStorage.setItem(WGOAL_WEIGHT_KEY, String(d.weight_goal));
         renderToday();
         renderWater();
         alert('Data imported successfully!');
