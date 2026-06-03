@@ -1,6 +1,6 @@
 # 🥗 Calorie Tracker
 
-A simple, free calorie and weight tracking web app. No account needed — just open the link and start logging.
+A free, privacy-first calorie and weight tracking web app. No account, no install, no ads — just open the link and start logging.
 
 **Live app → [andos80.github.io/calorie-tracker](https://andos80.github.io/calorie-tracker/)**
 
@@ -9,89 +9,110 @@ A simple, free calorie and weight tracking web app. No account needed — just o
 ## Features
 
 ### 📅 Today
-- Log meals from the built-in food library or enter them manually
-- Choose from **70+ common foods** with smart units (pcs, glass, slice, tbsp, cl, g)
-- See your daily calorie total vs. your personal goal with a progress bar
-- Macro breakdown: Protein, Carbs and Fat
-- Navigate to any past or future date using the arrow buttons
+- Set your daily calorie goal and track progress with a gradient progress bar
+- Log meals from the built-in food library using a dropdown with **75+ common foods**
+- Smart units per food type — eggs in pcs, milk in glasses, bread in slices, beer in cl, etc.
+- Add any meal manually with full macro breakdown (protein, carbs, fat)
+- Navigate to any past or future date with the arrow buttons
+- Export and import your personal data as a `.json` backup file
 
 ### 💧 Water Tracker
-- Track your daily water intake with quick-add buttons (+1 glass, +33 cl, +50 cl)
-- Visual progress bar and glass icons
-- Custom amount input for any size
+- Quick-add buttons: **+1 glass**, **+33 cl**, **+50 cl**, or enter any custom amount
+- Visual progress bar and animated water drop icons
+- Daily goal of 2000 ml, resets automatically each day
 
 ### 🔍 Search Food
-- Browse the built-in library by category (Eggs & Dairy, Meat & Fish, Bread & Grains, Vegetables, Fruits, Drinks, Snacks & Other)
-- Filter by typing in the search bar
-- **Search online** via the Open Food Facts database for any food not in the library
-- Click a result → enter grams → log it to today
+- Browse the built-in library by category with filter chips
+- Real-time search filters the library as you type
+- **Search online** via [Open Food Facts](https://world.openfoodfacts.org/) for anything not in the library
+- Select a result → enter grams → log it to today in one tap
 
 ### 📆 Calendar
-- Full monthly calendar view showing calories logged per day
-- Green = under goal · Red = over goal · Outlined = today
+- Full monthly calendar showing calories logged for every day
+- 🟢 Green = under goal · 🔴 Red = over goal · Outlined cell = today
+- Navigate between months with the arrow buttons
 - Tap any day to jump straight to logging for that date
 
 ### ⚖️ Weight
-- Log your weight once a week (or as often as you like)
-- Set an optional goal weight
-- Stats: starting weight, current weight, total change, goal
-- Line chart with 1M / 3M / 6M / All time views
-- Full history with change since last entry
+- Log your weight as often as you like (recommended: once a week)
+- Set an optional goal weight to track progress towards
+- Stats summary: starting weight · current weight · total change · goal
+- Smooth line chart with **1M / 3M / 6M / All time** period views
+- Full history list showing the change since each previous entry
 
 ### 📊 History
-- Bar chart of daily calories for the last 7, 14 or 30 days
-- Green bars = under goal · Red bars = over goal
-- Dashed goal line for reference
+- Bar chart of daily calorie totals for the last **7, 14 or 30 days**
+- Bars turn red on days you went over goal
+- Dashed goal line for easy visual reference
+
+### 🌙 Dark Mode
+- Toggle between light and dark with the button in the top corner
+- Deep navy dark theme, easy on the eyes
+- Preference is saved and restored automatically
 
 ---
 
 ## Food Library
 
-Over 70 everyday foods across 7 categories with accurate calorie and macro data (per 100g). Units are set automatically per food type:
+**75+ everyday foods** across 7 categories with accurate calorie and macro data. Units are set automatically per food:
 
 | Unit | Examples |
 |------|---------|
-| pcs | Eggs, sausage, apple, banana, avocado |
-| glass | Milk, juice, Coca-Cola, smoothie |
-| cl | Beer, wine |
-| slice | Bread, ham, bacon |
-| tbsp | Butter, peanut butter, olive oil, mayo |
-| cup | Coffee |
-| g | Chicken, beef, fish, rice, pasta, cheese, vegetables |
+| **pcs** | Egg, sausage, bagel, tortilla, apple, banana, orange, avocado, carrot, tomato |
+| **glass** | Milk, orange juice, apple juice, Coca-Cola, smoothie |
+| **cl** | Beer (lager), Beer (strong/IPA), Wine (red/white/rosé) |
+| **slice** | White bread, whole wheat bread, ham, bacon |
+| **tbsp** | Butter, cream cheese, peanut butter, olive oil, ketchup, mayo, hummus |
+| **cup** | Coffee (black), coffee with milk |
+| **scoop** | Ice cream |
+| **g** | Chicken, beef, fish, salmon, tuna, rice, pasta, oats, cheese, all vegetables |
+
+### Categories
+Eggs & Dairy · Meat & Fish · Bread & Grains · Vegetables · Fruits · Drinks · Snacks & Other
 
 ---
 
 ## Saving Your Data
 
-All data is stored in your browser's local storage — nothing is sent to a server.
+All data is stored in your browser's **local storage** — nothing is ever sent to a server.
 
-**To back up or move your data:**
-1. Go to the **Today** tab and scroll to the bottom
-2. Click **⬇ Export** — saves a `.json` file to your device
-3. On any device, click **⬆ Import** and select your file to restore everything
+**To back up or move your data to another device:**
+1. Go to the **Today** tab and scroll down to the **Your data** card
+2. Tap **⬇ Export** — downloads a `calorie-tracker-YYYY-MM-DD.json` file
+3. On any browser or device, tap **⬆ Import** and select your file to restore everything instantly
 
-Each person keeps their own `.json` file. The backup includes meals, water, weight entries and all settings.
+The backup includes all meals, water intake, weight entries, your calorie goal and water goal.
+Each person keeps their own file — this is how multiple people can use the same app independently.
 
 ---
 
 ## How to Use
 
 1. Open **[andos80.github.io/calorie-tracker](https://andos80.github.io/calorie-tracker/)** in any browser
-2. Set your daily calorie goal in the top-right corner
-3. Log meals on the **Today** tab using the library dropdown or the manual form
-4. Track water intake in the **💧 Water** section
-5. Check the **Calendar** for a monthly overview
-6. Log your weight weekly on the **Weight** tab
-7. Export your data regularly to keep a backup
+2. On the **Today** tab, set your daily calorie goal and tap **Save**
+3. Log meals using the **Add from library** dropdown, or fill in the manual form below it
+4. Log water intake in the **💧 Water intake** section
+5. Switch to **Weight** to start tracking your weekly weigh-ins
+6. Use **Calendar** for a monthly overview — tap any day to edit it
+7. Check **History** to see your calorie trend over time
+8. Tap **⬇ Export** regularly to keep a personal backup
 
-Works on desktop and mobile. No installation, no account, no ads.
+---
+
+## Design & Compatibility
+
+- Clean, premium design using the **Inter** typeface
+- Full **dark mode** support
+- Tested and optimised for **mobile** (iPhone/Android) and desktop
+- Works in any modern browser — Chrome, Safari, Firefox, Edge
 
 ---
 
 ## Tech
 
-- Pure HTML, CSS and JavaScript — single file, no frameworks, no build step
-- Data stored in `localStorage` as JSON
+- Single HTML file — no framework, no build step, no dependencies to install
+- Data stored in `localStorage` as JSON (no server, no account)
 - Food search powered by [Open Food Facts](https://world.openfoodfacts.org/) (open-source food database)
-- Charts by [Chart.js](https://www.chartjs.org/)
+- Charts rendered by [Chart.js](https://www.chartjs.org/)
+- Fonts from [Google Fonts](https://fonts.google.com/) (Inter)
 - Hosted for free on [GitHub Pages](https://pages.github.com/)
