@@ -12,6 +12,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Cal Tracker">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -551,6 +552,7 @@
 <header>
   <h1><span class="logo">🥗</span> <span id="headerTitle">Calorie Tracker</span></h1>
   <div class="header-right">
+    <span id="syncStatus" title="Supabase sync" style="font-size:0.85rem;opacity:0.7"></span>
     <button class="lang-toggle" onclick="toggleLang()" id="langBtn" title="Change language">🇳🇴</button>
     <button class="dark-toggle" onclick="toggleDark()" id="darkBtn" title="Toggle dark mode">🌙</button>
   </div>
@@ -811,25 +813,68 @@
 </div>
 
 <script>
-// ── Storage ──────────────────────────────────────────────────────
-const MEALS_KEY   = 'ct_meals';
-const GOAL_KEY    = 'ct_goal';
-const DARK_KEY    = 'ct_dark';
-const WATER_KEY   = 'ct_water';
-const WGOAL_KEY   = 'ct_water_goal';
-const WEIGHT_KEY  = 'ct_weight';
-const WGOAL_WEIGHT_KEY = 'ct_weight_goal';
+// ── Supabase ─────────────────────────────────────────────────────
+const SUPABASE_URL = 'https://djpplvfqjgremvudmybj.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqcHBsdmZxamdyZW12dWRteWJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5NTcyMjgsImV4cCI6MjA5NjUzMzIyOH0.qQE62_6F1GB0ZxKG3CC3a1qdNboMOyR1K32Xho8PXew';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-function loadData()    { try { return JSON.parse(localStorage.getItem(MEALS_KEY))   || {}; } catch { return {}; } }
-function loadWeights() { try { return JSON.parse(localStorage.getItem(WEIGHT_KEY)) || []; } catch { return []; } }
-function saveWeights(a){ localStorage.setItem(WEIGHT_KEY, JSON.stringify(a)); }
-function getWeightGoal(){ return parseFloat(localStorage.getItem(WGOAL_WEIGHT_KEY)) || null; }
-function saveData(d) { localStorage.setItem(MEALS_KEY, JSON.stringify(d)); }
-function loadWater() { try { return JSON.parse(localStorage.getItem(WATER_KEY))  || {}; } catch { return {}; } }
-function saveWater(d){ localStorage.setItem(WATER_KEY, JSON.stringify(d)); }
-function getGoal()   { return parseInt(localStorage.getItem(GOAL_KEY)  || '2000'); }
-function setGoal(v)  { localStorage.setItem(GOAL_KEY, String(v)); }
-function getWaterGoal()  { return parseInt(localStorage.getItem(WGOAL_KEY) || '2000'); }
+// In-memory cache — filled on startup from Supabase
+const DB = { meals: {}, water: {}, weights: [], settings: {} };
+
+async function initDB() {
+  const [mealsRes, waterRes, weightsRes, settingsRes] = await Promise.all([
+    sb.from('meals').select('*').order('sort_order'),
+    sb.from('water_log').select('*'),
+    sb.from('weights').select('*').order('date'),
+    sb.from('settings').select('*'),
+  ]);
+  // Build meals object keyed by date
+  (mealsRes.data || []).forEach(r => {
+    if (!DB.meals[r.date]) DB.meals[r.date] = [];
+    DB.meals[r.date].push({ name: r.name, calories: r.calories, protein: r.protein, carbs: r.carbs, fat: r.fat });
+  });
+  // Build water object keyed by date
+  (waterRes.data || []).forEach(r => { DB.water[r.date] = r.amount; });
+  // Build weights array
+  DB.weights = (weightsRes.data || []).map(r => ({ date: r.date, value: r.value }));
+  // Build settings map
+  (settingsRes.data || []).forEach(r => { DB.settings[r.key] = r.value; });
+}
+
+async function syncMealsForDate(date, meals) {
+  await sb.from('meals').delete().eq('date', date);
+  if (meals && meals.length > 0) {
+    await sb.from('meals').insert(
+      meals.map((m, i) => ({ date, name: m.name, calories: m.calories, protein: m.protein||0, carbs: m.carbs||0, fat: m.fat||0, sort_order: i }))
+    );
+  }
+}
+
+async function syncSetting(key, value) {
+  await sb.from('settings').upsert({ key, value: String(value) });
+}
+
+// ── Storage ──────────────────────────────────────────────────────
+const DARK_KEY = 'ct_dark';
+
+function loadData()     { return DB.meals; }
+function saveData(d)    { DB.meals = d; syncMealsForDate(currentDate, d[currentDate] || []); }
+function loadWater()    { return DB.water; }
+function saveWater(d)   {
+  DB.water = d;
+  Object.entries(d).forEach(([date, amount]) => sb.from('water_log').upsert({ date, amount }));
+}
+function loadWeights()  { return DB.weights; }
+function saveWeights(a) {
+  DB.weights = a;
+  sb.from('weights').delete().neq('date', '').then(() => {
+    if (a.length > 0) sb.from('weights').insert(a.map(w => ({ date: w.date, value: w.value })));
+  });
+}
+function getGoal()      { return parseInt(DB.settings['cal_goal'] || '2000'); }
+function setGoal(v)     { DB.settings['cal_goal'] = String(v); syncSetting('cal_goal', v); }
+function getWaterGoal() { return parseInt(DB.settings['water_goal'] || '2000'); }
+function getWeightGoal(){ return parseFloat(DB.settings['weight_goal']) || null; }
 
 // ── Dark mode ────────────────────────────────────────────────────
 function applyDark(on) {
@@ -1577,7 +1622,7 @@ function logWeight() {
   const weight = parseFloat(document.getElementById('weightInput').value);
   const goalV  = parseFloat(document.getElementById('weightGoalInput').value);
   if (!date || isNaN(weight) || weight < 20) { alert(T('alerts.validWeight')); return; }
-  if (!isNaN(goalV) && goalV >= 20) localStorage.setItem(WGOAL_WEIGHT_KEY, String(goalV));
+  if (!isNaN(goalV) && goalV >= 20) { DB.settings['weight_goal'] = String(goalV); syncSetting('weight_goal', goalV); }
 
   const arr = loadWeights();
   const existing = arr.findIndex(w => w.date === date);
@@ -1787,9 +1832,9 @@ function importData() {
         if (d.meals)        saveData(d.meals);
         if (d.water)        saveWater(d.water);
         if (d.goal)         setGoal(d.goal);
-        if (d.water_goal)   localStorage.setItem(WGOAL_KEY, String(d.water_goal));
+        if (d.water_goal)   { DB.settings['water_goal'] = String(d.water_goal); syncSetting('water_goal', d.water_goal); }
         if (d.weights)      saveWeights(d.weights);
-        if (d.weight_goal)  localStorage.setItem(WGOAL_WEIGHT_KEY, String(d.weight_goal));
+        if (d.weight_goal)  { DB.settings['weight_goal'] = String(d.weight_goal); syncSetting('weight_goal', d.weight_goal); }
         renderToday();
         renderWater();
         alert(T('alerts.imported'));
@@ -1809,8 +1854,15 @@ applyTranslations();
 buildLibrarySelect();
 initCategoryChips();
 filterLibrary();
-renderToday();
-renderWater();
+
+(async () => {
+  const statusEl = document.getElementById('syncStatus');
+  if (statusEl) statusEl.textContent = '⏳';
+  await initDB();
+  if (statusEl) statusEl.textContent = '✅';
+  renderToday();
+  renderWater();
+})();
 </script>
 </body>
 </html>
