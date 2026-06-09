@@ -995,10 +995,15 @@ async function syncSetting(key, value) {
 async function manualRefresh() {
   if (pendingSyncs > 0) return;
   setSyncStatus('⏳');
-  await initDB();
-  setSyncStatus('✅');
-  renderToday();
-  renderWater();
+  try {
+    await initDB();
+    setSyncStatus('✅');
+    renderToday();
+    renderWater();
+  } catch (e) {
+    setSyncStatus('❌');
+    console.error('Refresh feil:', e);
+  }
 }
 
 // ── Storage ──────────────────────────────────────────────────────
@@ -2096,6 +2101,8 @@ initCategoryChips();
 filterLibrary();
 
 // Auth state listener — re-fires on login/logout
+showAuthScreen(); // default til innlogging til onAuthStateChange bekrefter sesjon
+
 sb.auth.onAuthStateChange(async (event, session) => {
   currentUser = session?.user ?? null;
   currentSession = session;
@@ -2103,30 +2110,33 @@ sb.auth.onAuthStateChange(async (event, session) => {
     showApp();
     const statusEl = document.getElementById('syncStatus');
     statusEl.textContent = '⏳';
-    await initDB();
-    statusEl.textContent = '✅';
-    renderToday();
-    renderWater();
+    try {
+      await initDB();
+      statusEl.textContent = '✅';
+      renderToday();
+      renderWater();
+    } catch (e) {
+      statusEl.textContent = '❌';
+      console.error('initDB feil:', e);
+    }
   } else {
     showAuthScreen();
   }
 });
 
-// Check if already logged in
-(async () => {
-  applyDark(localStorage.getItem(DARK_KEY) === '1');
-  const { data: { session } } = await sb.auth.getSession();
-  if (!session) showAuthScreen();
-})();
-
 // Refresh data when app comes back into focus (e.g. switching from PC to phone)
 document.addEventListener('visibilitychange', async () => {
   if (document.visibilityState === 'visible' && currentUser && pendingSyncs === 0) {
     setSyncStatus('⏳');
-    await initDB();
-    setSyncStatus('✅');
-    renderToday();
-    renderWater();
+    try {
+      await initDB();
+      setSyncStatus('✅');
+      renderToday();
+      renderWater();
+    } catch (e) {
+      setSyncStatus('❌');
+      console.error('Synk feil:', e);
+    }
   }
 });
 </script>
