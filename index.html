@@ -1974,6 +1974,18 @@ sb.auth.onAuthStateChange(async (event, session) => {
   const { data: { session } } = await sb.auth.getSession();
   if (!session) showAuthScreen();
 })();
+
+// Refresh data when app comes back into focus (e.g. switching from PC to phone)
+document.addEventListener('visibilitychange', async () => {
+  if (document.visibilityState === 'visible' && currentUser) {
+    const statusEl = document.getElementById('syncStatus');
+    statusEl.textContent = '⏳';
+    await initDB();
+    statusEl.textContent = '✅';
+    renderToday();
+    renderWater();
+  }
+});
 </script>
 </div><!-- end #mainApp -->
 </body>
