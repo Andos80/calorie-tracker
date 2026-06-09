@@ -1998,10 +1998,22 @@ function importData() {
             }));
           }
           if (allMeals.length > 0) {
-            const BATCH = 20;
+            const BATCH = 10;
             for (let i = 0; i < allMeals.length; i += BATCH) {
-              btn.textContent = `⏳ Laster opp måltider ${i + 1}–${Math.min(i + BATCH, allMeals.length)} av ${allMeals.length}...`;
-              await restInsert('meals', allMeals.slice(i, i + BATCH));
+              const chunk = allMeals.slice(i, i + BATCH);
+              btn.textContent = `⏳ Måltider ${i + 1}–${Math.min(i + BATCH, allMeals.length)} av ${allMeals.length}...`;
+              let ok = false;
+              for (let attempt = 1; attempt <= 3; attempt++) {
+                try {
+                  await restInsert('meals', chunk);
+                  ok = true;
+                  break;
+                } catch (e) {
+                  if (attempt === 3) throw e;
+                  btn.textContent = `⏳ Prøver igjen (${attempt}/3)...`;
+                  await new Promise(r => setTimeout(r, 1500));
+                }
+              }
             }
           }
           DB.meals = d.meals;
