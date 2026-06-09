@@ -912,21 +912,31 @@ async function signOut() {
   showAuthScreen();
 }
 
+async function restGet(table, filter) {
+  const url = `${SUPABASE_URL}/rest/v1/${table}${filter ? '?' + filter : ''}`;
+  const res = await withTimeout(
+    fetch(url, { headers: restHeaders() }),
+    10000, `${table} henting tidsavbrudd`
+  );
+  if (!res.ok) throw new Error(`${table} henting feilet: ${res.status}`);
+  return res.json();
+}
+
 async function initDB() {
-  const [mealsRes, waterRes, weightsRes, settingsRes] = await Promise.all([
-    sb.from('meals').select('*').order('sort_order'),
-    sb.from('water_log').select('*'),
-    sb.from('weights').select('*').order('date'),
-    sb.from('settings').select('*'),
+  const [meals, water, weights, settings] = await Promise.all([
+    restGet('meals', 'order=sort_order.asc'),
+    restGet('water_log', ''),
+    restGet('weights', 'order=date.asc'),
+    restGet('settings', ''),
   ]);
   DB.meals = {}; DB.water = {}; DB.weights = []; DB.settings = {};
-  (mealsRes.data || []).forEach(r => {
+  meals.forEach(r => {
     if (!DB.meals[r.date]) DB.meals[r.date] = [];
     DB.meals[r.date].push({ name: r.name, calories: r.calories, protein: r.protein, carbs: r.carbs, fat: r.fat });
   });
-  (waterRes.data || []).forEach(r => { DB.water[r.date] = r.amount; });
-  DB.weights = (weightsRes.data || []).map(r => ({ date: r.date, value: r.value }));
-  (settingsRes.data || []).forEach(r => { DB.settings[r.key] = r.value; });
+  water.forEach(r => { DB.water[r.date] = r.amount; });
+  DB.weights = weights.map(r => ({ date: r.date, value: r.value }));
+  settings.forEach(r => { DB.settings[r.key] = r.value; });
 }
 
 let pendingSyncs = 0;
@@ -936,8 +946,8 @@ function setSyncStatus(status) {
   if (el) el.textContent = status;
 }
 
-function restHeaders() {
-  const token = currentSession?.access_token;
+function restHeaders(session) {
+  const token = (session || currentSession)?.access_token;
   if (!token) throw new Error('Ikke logget inn');
   return {
     'apikey': SUPABASE_KEY,
