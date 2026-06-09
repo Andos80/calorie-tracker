@@ -1998,8 +1998,11 @@ function importData() {
             }));
           }
           if (allMeals.length > 0) {
-            btn.textContent = `⏳ Laster opp ${allMeals.length} måltider...`;
-            await restInsert('meals', allMeals);
+            const BATCH = 20;
+            for (let i = 0; i < allMeals.length; i += BATCH) {
+              btn.textContent = `⏳ Laster opp måltider ${i + 1}–${Math.min(i + BATCH, allMeals.length)} av ${allMeals.length}...`;
+              await restInsert('meals', allMeals.slice(i, i + BATCH));
+            }
           }
           DB.meals = d.meals;
         }
