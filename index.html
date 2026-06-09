@@ -1000,6 +1000,8 @@ async function manualRefresh() {
     setSyncStatus('✅');
     renderToday();
     renderWater();
+    renderWeightPage();
+    renderCalendar();
   } catch (e) {
     setSyncStatus('❌');
     console.error('Refresh feil:', e);
@@ -2133,6 +2135,8 @@ document.addEventListener('visibilitychange', async () => {
       setSyncStatus('✅');
       renderToday();
       renderWater();
+      renderWeightPage();
+      renderCalendar();
     } catch (e) {
       setSyncStatus('❌');
       console.error('Synk feil:', e);
