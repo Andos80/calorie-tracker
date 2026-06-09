@@ -104,9 +104,13 @@ Appen kan legges til på hjemskjermen og fungerer som en native app — ingen Ap
 
 ---
 
-## Skylagring
+## Skylagring & synkronisering
 
 All data lagres i **Supabase** og er koblet til din brukerkonto. Du kan logge inn fra hvilken som helst enhet og se din data.
+
+- Data synkroniseres automatisk når du bytter mellom enheter
+- Synk-ikonet i headeren viser status: **⏳** laster · **✅** oppdatert · **❌** feil
+- Trykk på **✅**-ikonet for å tvinge en manuell oppdatering fra skyen
 
 **Backup og gjenoppretting:**
 1. Gå til **I dag**-fanen og scroll ned til **Your data**-kortet
