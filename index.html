@@ -922,6 +922,21 @@ async function initDB() {
   (settingsRes.data || []).forEach(r => { DB.settings[r.key] = r.value; });
 }
 
+let pendingSyncs = 0;
+
+function setSyncStatus(status) {
+  const el = document.getElementById('syncStatus');
+  if (el) el.textContent = status;
+}
+
+function trackSync(promise) {
+  pendingSyncs++;
+  setSyncStatus('⏳');
+  promise
+    .then(() => { if (--pendingSyncs === 0) setSyncStatus('✅'); })
+    .catch(err => { pendingSyncs = 0; setSyncStatus('❌'); console.error('Sync error:', err); });
+}
+
 async function syncMealsForDate(date, meals) {
   const { error: delErr } = await sb.from('meals').delete().eq('date', date).eq('user_id', uid());
   if (delErr) throw new Error(`Slett feilet for ${date}: ${delErr.message}`);
@@ -934,27 +949,39 @@ async function syncMealsForDate(date, meals) {
 }
 
 async function syncSetting(key, value) {
-  await sb.from('settings').upsert({ user_id: uid(), key, value: String(value) }, { onConflict: 'user_id,key' });
+  const { error } = await sb.from('settings').upsert({ user_id: uid(), key, value: String(value) }, { onConflict: 'user_id,key' });
+  if (error) throw new Error(error.message);
 }
 
 // ── Storage ──────────────────────────────────────────────────────
 const DARK_KEY = 'ct_dark';
 
 function loadData()     { return DB.meals; }
-function saveData(d)    { DB.meals = d; syncMealsForDate(currentDate, d[currentDate] || []); }
+function saveData(d)    {
+  DB.meals = d;
+  trackSync(syncMealsForDate(currentDate, d[currentDate] || []));
+}
 function loadWater()    { return DB.water; }
 function saveWater(d)   {
   DB.water = d;
-  Object.entries(d).forEach(([date, amount]) =>
-    sb.from('water_log').upsert({ user_id: uid(), date, amount }, { onConflict: 'user_id,date' })
-  );
+  trackSync(Promise.all(
+    Object.entries(d).map(([date, amount]) =>
+      sb.from('water_log').upsert({ user_id: uid(), date, amount }, { onConflict: 'user_id,date' })
+        .then(({ error }) => { if (error) throw new Error(error.message); })
+    )
+  ));
 }
 function loadWeights()  { return DB.weights; }
 function saveWeights(a) {
   DB.weights = a;
-  sb.from('weights').delete().eq('user_id', uid()).then(() => {
-    if (a.length > 0) sb.from('weights').insert(a.map(w => ({ user_id: uid(), date: w.date, value: w.value })));
-  });
+  trackSync(
+    sb.from('weights').delete().eq('user_id', uid())
+      .then(({ error }) => {
+        if (error) throw new Error(error.message);
+        if (a.length > 0) return sb.from('weights').insert(a.map(w => ({ user_id: uid(), date: w.date, value: w.value })))
+          .then(({ error }) => { if (error) throw new Error(error.message); });
+      })
+  );
 }
 function getGoal()      { return parseInt(DB.settings['cal_goal'] || '2000'); }
 function setGoal(v)     { DB.settings['cal_goal'] = String(v); syncSetting('cal_goal', v); }
@@ -1989,11 +2016,10 @@ sb.auth.onAuthStateChange(async (event, session) => {
 
 // Refresh data when app comes back into focus (e.g. switching from PC to phone)
 document.addEventListener('visibilitychange', async () => {
-  if (document.visibilityState === 'visible' && currentUser) {
-    const statusEl = document.getElementById('syncStatus');
-    statusEl.textContent = '⏳';
+  if (document.visibilityState === 'visible' && currentUser && pendingSyncs === 0) {
+    setSyncStatus('⏳');
     await initDB();
-    statusEl.textContent = '✅';
+    setSyncStatus('✅');
     renderToday();
     renderWater();
   }
