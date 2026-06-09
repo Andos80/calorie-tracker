@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
   <title>Calorie Tracker</title>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -319,7 +319,7 @@
   .water-btn:active { transform: scale(.95); }
   .water-btn.undo { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); box-shadow: none; }
   .water-custom { display: flex; gap: 0.4rem; align-items: center; margin-left: auto; }
-  .water-custom input { width: 74px; padding: 0.5rem 0.7rem; border: 1px solid var(--border); border-radius: 999px; font-size: 0.85rem; background: var(--surface); color: var(--text); outline: none; }
+  .water-custom input { width: 74px; padding: 0.5rem 0.7rem; border: 1px solid var(--border); border-radius: 999px; font-size: 1rem; background: var(--surface); color: var(--text); outline: none; }
   .water-custom input:focus { border-color: var(--water-fill-solid); }
   .water-custom span { font-size: 0.78rem; color: var(--muted); }
 
@@ -362,7 +362,7 @@
 
   input[type=text], input[type=number], input[type=date], select {
     width: 100%; padding: 0.7rem 0.85rem; border: 1px solid var(--border);
-    border-radius: var(--radius-sm); font-size: 0.9rem; font-family: inherit; outline: none;
+    border-radius: var(--radius-sm); font-size: 1rem; font-family: inherit; outline: none;
     background: var(--surface); color: var(--text); transition: border .15s, box-shadow .15s;
   }
   input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-shadow); }
