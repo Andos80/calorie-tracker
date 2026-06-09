@@ -1019,24 +1019,21 @@ function saveData(d)    {
 function loadWater()    { return DB.water; }
 function saveWater(d)   {
   DB.water = d;
-  trackSync(Promise.all(
-    Object.entries(d).map(([date, amount]) =>
-      sb.from('water_log').upsert({ user_id: uid(), date, amount }, { onConflict: 'user_id,date' })
-        .then(({ error }) => { if (error) throw new Error(error.message); })
-    )
-  ));
+  const amount = d[currentDate] || 0;
+  trackSync((async () => {
+    await restFetch('DELETE', 'water_log', `user_id=eq.${uid()}&date=eq.${currentDate}`);
+    await restFetch('POST', 'water_log', null, [{ user_id: uid(), date: currentDate, amount }]);
+  })());
 }
 function loadWeights()  { return DB.weights; }
 function saveWeights(a) {
   DB.weights = a;
-  trackSync(
-    sb.from('weights').delete().eq('user_id', uid())
-      .then(({ error }) => {
-        if (error) throw new Error(error.message);
-        if (a.length > 0) return sb.from('weights').insert(a.map(w => ({ user_id: uid(), date: w.date, value: w.value })))
-          .then(({ error }) => { if (error) throw new Error(error.message); });
-      })
-  );
+  trackSync((async () => {
+    await restFetch('DELETE', 'weights', `user_id=eq.${uid()}`);
+    if (a.length > 0) {
+      await restFetch('POST', 'weights', null, a.map(w => ({ user_id: uid(), date: w.date, value: w.value })));
+    }
+  })());
 }
 function getGoal()      { return parseInt(DB.settings['cal_goal'] || '2000'); }
 function setGoal(v)     { DB.settings['cal_goal'] = String(v); syncSetting('cal_goal', v); }
