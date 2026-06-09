@@ -869,6 +869,7 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let currentUser = null;
+let currentSession = null;
 
 // In-memory cache — filled on startup from Supabase
 const DB = { meals: {}, water: {}, weights: [], settings: {} };
@@ -1954,11 +1955,9 @@ function importData() {
       try {
         const d = JSON.parse(ev.target.result);
 
-        // Get fresh session token for direct REST calls
-        const { data: { session } } = await sb.auth.getSession();
-        if (!session) throw new Error('Ikke logget inn — logg ut og inn igjen');
-        const token = session.access_token;
-        const userId = session.user.id;
+        if (!currentSession) throw new Error('Ikke logget inn — logg ut og inn igjen');
+        const token = currentSession.access_token;
+        const userId = currentSession.user.id;
 
         const headers = {
           'apikey': SUPABASE_KEY,
@@ -2043,6 +2042,7 @@ filterLibrary();
 // Auth state listener — re-fires on login/logout
 sb.auth.onAuthStateChange(async (event, session) => {
   currentUser = session?.user ?? null;
+  currentSession = session;
   if (currentUser) {
     showApp();
     const statusEl = document.getElementById('syncStatus');
