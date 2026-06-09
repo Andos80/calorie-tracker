@@ -935,7 +935,7 @@ async function initDB() {
     DB.meals[r.date].push({ name: r.name, calories: r.calories, protein: r.protein, carbs: r.carbs, fat: r.fat });
   });
   water.forEach(r => { DB.water[r.date] = r.amount; });
-  DB.weights = weights.map(r => ({ date: r.date, value: r.value }));
+  DB.weights = weights.map(r => ({ date: r.date, weight: r.value }));
   settings.forEach(r => { DB.settings[r.key] = r.value; });
 }
 
@@ -1031,7 +1031,7 @@ function saveWeights(a) {
   trackSync((async () => {
     await restFetch('DELETE', 'weights', `user_id=eq.${uid()}`);
     if (a.length > 0) {
-      await restFetch('POST', 'weights', null, a.map(w => ({ user_id: uid(), date: w.date, value: w.value })));
+      await restFetch('POST', 'weights', null, a.map(w => ({ user_id: uid(), date: w.date, value: w.weight })));
     }
   })());
 }
