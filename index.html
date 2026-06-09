@@ -1947,22 +1947,40 @@ function importData() {
       btn.textContent = '⏳ Importerer...';
       try {
         const d = JSON.parse(ev.target.result);
+        if (!uid()) throw new Error('Ikke logget inn');
+
         if (d.meals) {
-          const dates = Object.entries(d.meals);
-          for (let i = 0; i < dates.length; i++) {
-            const [date, meals] = dates[i];
-            btn.textContent = `⏳ ${i + 1}/${dates.length} dager...`;
-            await syncMealsForDate(date, meals);
+          btn.textContent = '⏳ Sletter gammelt...';
+          const { error: delErr } = await sb.from('meals').delete().eq('user_id', uid());
+          if (delErr) throw new Error('Slett feilet: ' + delErr.message);
+
+          const allMeals = [];
+          for (const [date, meals] of Object.entries(d.meals)) {
+            meals.forEach((m, i) => allMeals.push({
+              date, user_id: uid(), name: m.name,
+              calories: m.calories, protein: m.protein||0,
+              carbs: m.carbs||0, fat: m.fat||0, sort_order: i
+            }));
+          }
+          if (allMeals.length > 0) {
+            btn.textContent = `⏳ Laster opp ${allMeals.length} måltider...`;
+            const { error: insErr } = await sb.from('meals').insert(allMeals);
+            if (insErr) throw new Error('Insert feilet: ' + insErr.message);
           }
           DB.meals = d.meals;
         }
+
         if (d.water) {
-          for (const [date, amount] of Object.entries(d.water)) {
-            const { error } = await sb.from('water_log').upsert({ user_id: uid(), date, amount }, { onConflict: 'user_id,date' });
-            if (error) throw new Error(`Vann feilet for ${date}: ${error.message}`);
+          const { error: delErr } = await sb.from('water_log').delete().eq('user_id', uid());
+          if (delErr) throw new Error('Vann slett feilet: ' + delErr.message);
+          const allWater = Object.entries(d.water).map(([date, amount]) => ({ user_id: uid(), date, amount }));
+          if (allWater.length > 0) {
+            const { error: insErr } = await sb.from('water_log').insert(allWater);
+            if (insErr) throw new Error('Vann insert feilet: ' + insErr.message);
           }
           DB.water = d.water;
         }
+
         if (d.goal)        setGoal(d.goal);
         if (d.water_goal)  { DB.settings['water_goal'] = String(d.water_goal); await syncSetting('water_goal', d.water_goal); }
         if (d.weights)     saveWeights(d.weights);
