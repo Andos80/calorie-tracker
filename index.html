@@ -901,6 +901,8 @@ async function signUp() {
 async function signOut() {
   await sb.auth.signOut();
   DB.meals = {}; DB.water = {}; DB.weights = []; DB.settings = {};
+  currentUser = null;
+  showAuthScreen();
 }
 
 async function initDB() {
