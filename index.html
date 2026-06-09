@@ -545,16 +545,60 @@
     .chart-card { padding: 1.2rem; }
     .weight-stats { grid-template-columns: repeat(2,1fr); }
   }
+
+/* ── Auth screen ──────────────────────────────────────────────── */
+#authScreen {
+  position:fixed;inset:0;background:var(--bg);
+  display:flex;align-items:center;justify-content:center;z-index:999;
+}
+.auth-card {
+  background:var(--card);border-radius:1.2rem;padding:2rem;
+  width:min(360px,90vw);box-shadow:0 8px 32px rgba(0,0,0,.15);
+  display:flex;flex-direction:column;gap:.9rem;
+}
+.auth-card h2 { text-align:center;font-size:1.4rem;margin:0 0 .4rem; }
+.auth-card input {
+  padding:.7rem 1rem;border-radius:.6rem;border:1.5px solid var(--border);
+  background:var(--bg);color:var(--text);font-size:1rem;width:100%;box-sizing:border-box;
+}
+.auth-card input:focus { outline:none;border-color:var(--accent); }
+.auth-tabs { display:flex;gap:.5rem; }
+.auth-tabs button {
+  flex:1;padding:.7rem;border-radius:.6rem;font-size:.95rem;font-weight:600;
+  border:none;cursor:pointer;transition:background .2s;
+}
+.auth-tabs .btn-primary  { background:var(--accent);color:#fff; }
+.auth-tabs .btn-secondary{ background:var(--surface);color:var(--text); }
+#authError { color:#ef4444;font-size:.85rem;text-align:center;min-height:1.1rem; }
+#authMsg   { color:var(--accent);font-size:.85rem;text-align:center;min-height:1.1rem; }
 </style>
 </head>
 <body>
 
+<!-- Auth screen -->
+<div id="authScreen" style="display:none">
+  <div class="auth-card">
+    <h2>🥗 Calorie Tracker</h2>
+    <input type="email"    id="authEmail"    placeholder="E-post" autocomplete="email" />
+    <input type="password" id="authPassword" placeholder="Passord (min. 6 tegn)" autocomplete="current-password" />
+    <div class="auth-tabs">
+      <button class="btn-primary"   onclick="signIn()">Logg inn</button>
+      <button class="btn-secondary" onclick="signUp()">Registrer</button>
+    </div>
+    <div id="authError"></div>
+    <div id="authMsg"></div>
+  </div>
+</div>
+
+<div id="mainApp" style="display:none">
 <header>
   <h1><span class="logo">🥗</span> <span id="headerTitle">Calorie Tracker</span></h1>
   <div class="header-right">
     <span id="syncStatus" title="Supabase sync" style="font-size:0.85rem;opacity:0.7"></span>
+    <span id="userEmail" style="font-size:0.75rem;opacity:0.6;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
     <button class="lang-toggle" onclick="toggleLang()" id="langBtn" title="Change language">🇳🇴</button>
     <button class="dark-toggle" onclick="toggleDark()" id="darkBtn" title="Toggle dark mode">🌙</button>
+    <button class="dark-toggle" onclick="signOut()" title="Logg ut">🚪</button>
   </div>
 </header>
 
@@ -818,8 +862,46 @@ const SUPABASE_URL = 'https://djpplvfqjgremvudmybj.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqcHBsdmZxamdyZW12dWRteWJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5NTcyMjgsImV4cCI6MjA5NjUzMzIyOH0.qQE62_6F1GB0ZxKG3CC3a1qdNboMOyR1K32Xho8PXew';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+let currentUser = null;
+
 // In-memory cache — filled on startup from Supabase
 const DB = { meals: {}, water: {}, weights: [], settings: {} };
+
+function uid() { return currentUser?.id; }
+
+function showApp() {
+  document.getElementById('authScreen').style.display = 'none';
+  document.getElementById('mainApp').style.display = 'block';
+  const email = currentUser?.email || '';
+  document.getElementById('userEmail').textContent = email.split('@')[0];
+}
+
+function showAuthScreen() {
+  document.getElementById('authScreen').style.display = 'flex';
+  document.getElementById('mainApp').style.display = 'none';
+}
+
+async function signIn() {
+  const email    = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+  document.getElementById('authError').textContent = '';
+  const { error } = await sb.auth.signInWithPassword({ email, password });
+  if (error) document.getElementById('authError').textContent = error.message;
+}
+
+async function signUp() {
+  const email    = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+  document.getElementById('authError').textContent = '';
+  const { error } = await sb.auth.signUp({ email, password });
+  if (error) document.getElementById('authError').textContent = error.message;
+  else document.getElementById('authMsg').textContent = 'Sjekk e-posten din for bekreftelse!';
+}
+
+async function signOut() {
+  await sb.auth.signOut();
+  DB.meals = {}; DB.water = {}; DB.weights = []; DB.settings = {};
+}
 
 async function initDB() {
   const [mealsRes, waterRes, weightsRes, settingsRes] = await Promise.all([
@@ -828,30 +910,27 @@ async function initDB() {
     sb.from('weights').select('*').order('date'),
     sb.from('settings').select('*'),
   ]);
-  // Build meals object keyed by date
+  DB.meals = {}; DB.water = {}; DB.weights = []; DB.settings = {};
   (mealsRes.data || []).forEach(r => {
     if (!DB.meals[r.date]) DB.meals[r.date] = [];
     DB.meals[r.date].push({ name: r.name, calories: r.calories, protein: r.protein, carbs: r.carbs, fat: r.fat });
   });
-  // Build water object keyed by date
   (waterRes.data || []).forEach(r => { DB.water[r.date] = r.amount; });
-  // Build weights array
   DB.weights = (weightsRes.data || []).map(r => ({ date: r.date, value: r.value }));
-  // Build settings map
   (settingsRes.data || []).forEach(r => { DB.settings[r.key] = r.value; });
 }
 
 async function syncMealsForDate(date, meals) {
-  await sb.from('meals').delete().eq('date', date);
+  await sb.from('meals').delete().eq('date', date).eq('user_id', uid());
   if (meals && meals.length > 0) {
     await sb.from('meals').insert(
-      meals.map((m, i) => ({ date, name: m.name, calories: m.calories, protein: m.protein||0, carbs: m.carbs||0, fat: m.fat||0, sort_order: i }))
+      meals.map((m, i) => ({ date, user_id: uid(), name: m.name, calories: m.calories, protein: m.protein||0, carbs: m.carbs||0, fat: m.fat||0, sort_order: i }))
     );
   }
 }
 
 async function syncSetting(key, value) {
-  await sb.from('settings').upsert({ key, value: String(value) });
+  await sb.from('settings').upsert({ user_id: uid(), key, value: String(value) }, { onConflict: 'user_id,key' });
 }
 
 // ── Storage ──────────────────────────────────────────────────────
@@ -862,13 +941,15 @@ function saveData(d)    { DB.meals = d; syncMealsForDate(currentDate, d[currentD
 function loadWater()    { return DB.water; }
 function saveWater(d)   {
   DB.water = d;
-  Object.entries(d).forEach(([date, amount]) => sb.from('water_log').upsert({ date, amount }));
+  Object.entries(d).forEach(([date, amount]) =>
+    sb.from('water_log').upsert({ user_id: uid(), date, amount }, { onConflict: 'user_id,date' })
+  );
 }
 function loadWeights()  { return DB.weights; }
 function saveWeights(a) {
   DB.weights = a;
-  sb.from('weights').delete().neq('date', '').then(() => {
-    if (a.length > 0) sb.from('weights').insert(a.map(w => ({ date: w.date, value: w.value })));
+  sb.from('weights').delete().eq('user_id', uid()).then(() => {
+    if (a.length > 0) sb.from('weights').insert(a.map(w => ({ user_id: uid(), date: w.date, value: w.value })));
   });
 }
 function getGoal()      { return parseInt(DB.settings['cal_goal'] || '2000'); }
@@ -1866,14 +1947,29 @@ buildLibrarySelect();
 initCategoryChips();
 filterLibrary();
 
+// Auth state listener — re-fires on login/logout
+sb.auth.onAuthStateChange(async (event, session) => {
+  currentUser = session?.user ?? null;
+  if (currentUser) {
+    showApp();
+    const statusEl = document.getElementById('syncStatus');
+    statusEl.textContent = '⏳';
+    await initDB();
+    statusEl.textContent = '✅';
+    renderToday();
+    renderWater();
+  } else {
+    showAuthScreen();
+  }
+});
+
+// Check if already logged in
 (async () => {
-  const statusEl = document.getElementById('syncStatus');
-  if (statusEl) statusEl.textContent = '⏳';
-  await initDB();
-  if (statusEl) statusEl.textContent = '✅';
-  renderToday();
-  renderWater();
+  applyDark(localStorage.getItem(DARK_KEY) === '1');
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) showAuthScreen();
 })();
 </script>
+</div><!-- end #mainApp -->
 </body>
 </html>
