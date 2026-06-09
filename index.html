@@ -858,6 +858,12 @@
 
 <script>
 // ── Supabase ─────────────────────────────────────────────────────
+function withTimeout(promise, ms, msg) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error(msg)), ms))
+  ]);
+}
 const SUPABASE_URL = 'https://djpplvfqjgremvudmybj.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqcHBsdmZxamdyZW12dWRteWJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5NTcyMjgsImV4cCI6MjA5NjUzMzIyOH0.qQE62_6F1GB0ZxKG3CC3a1qdNboMOyR1K32Xho8PXew';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -1949,9 +1955,20 @@ function importData() {
         const d = JSON.parse(ev.target.result);
         if (!uid()) throw new Error('Ikke logget inn');
 
+        // Wake up Supabase (free tier pauses after inactivity)
+        btn.textContent = '⏳ Kobler til database...';
+        const { error: pingErr } = await withTimeout(
+          sb.from('meals').select('id').limit(1),
+          15000, 'Databasen svarer ikke. Gå til supabase.com og sjekk at prosjektet ikke er pauset.'
+        );
+        if (pingErr && pingErr.message.includes('svarer ikke')) throw pingErr;
+
         if (d.meals) {
           btn.textContent = '⏳ Sletter gammelt...';
-          const { error: delErr } = await sb.from('meals').delete().eq('user_id', uid());
+          const { error: delErr } = await withTimeout(
+            sb.from('meals').delete().eq('user_id', uid()),
+            15000, 'Slett tok for lang tid — prøv igjen.'
+          );
           if (delErr) throw new Error('Slett feilet: ' + delErr.message);
 
           const allMeals = [];
@@ -1971,7 +1988,10 @@ function importData() {
         }
 
         if (d.water) {
-          const { error: delErr } = await sb.from('water_log').delete().eq('user_id', uid());
+          const { error: delErr } = await withTimeout(
+            sb.from('water_log').delete().eq('user_id', uid()),
+            15000, 'Vann-slett tok for lang tid — prøv igjen.'
+          );
           if (delErr) throw new Error('Vann slett feilet: ' + delErr.message);
           const allWater = Object.entries(d.water).map(([date, amount]) => ({ user_id: uid(), date, amount }));
           if (allWater.length > 0) {
