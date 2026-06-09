@@ -1903,8 +1903,11 @@ function importData() {
   const input  = document.createElement('input');
   input.type   = 'file';
   input.accept = '.json';
+  input.style.display = 'none';
+  document.body.appendChild(input);
   input.onchange = e => {
     const file = e.target.files[0];
+    document.body.removeChild(input);
     if (!file) return;
     const reader = new FileReader();
     reader.onload = async ev => {
@@ -1912,7 +1915,6 @@ function importData() {
         const d = JSON.parse(ev.target.result);
         if (d.meals) {
           DB.meals = d.meals;
-          // Sync every date in the backup to Supabase
           for (const [date, meals] of Object.entries(d.meals)) {
             await syncMealsForDate(date, meals);
           }
@@ -1920,7 +1922,7 @@ function importData() {
         if (d.water) {
           DB.water = d.water;
           for (const [date, amount] of Object.entries(d.water)) {
-            await sb.from('water_log').upsert({ date, amount });
+            await sb.from('water_log').upsert({ user_id: uid(), date, amount }, { onConflict: 'user_id,date' });
           }
         }
         if (d.goal)        setGoal(d.goal);
@@ -1930,7 +1932,8 @@ function importData() {
         renderToday();
         renderWater();
         alert(T('alerts.imported'));
-      } catch {
+      } catch (err) {
+        console.error('Import error:', err);
         alert(T('alerts.importFailed'));
       }
     };
