@@ -594,7 +594,7 @@
 <header>
   <h1><span class="logo">🥗</span> <span id="headerTitle">Calorie Tracker</span></h1>
   <div class="header-right">
-    <span id="syncStatus" title="Supabase sync" style="font-size:0.85rem;opacity:0.7"></span>
+    <span id="syncStatus" title="Trykk for å hente ny data" onclick="manualRefresh()" style="font-size:0.85rem;opacity:0.7;cursor:pointer"></span>
     <span id="userEmail" style="font-size:0.75rem;opacity:0.6;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
     <button class="lang-toggle" onclick="toggleLang()" id="langBtn" title="Change language">🇳🇴</button>
     <button class="dark-toggle" onclick="toggleDark()" id="darkBtn" title="Toggle dark mode">🌙</button>
@@ -936,28 +936,59 @@ function setSyncStatus(status) {
   if (el) el.textContent = status;
 }
 
+function restHeaders() {
+  const token = currentSession?.access_token;
+  if (!token) throw new Error('Ikke logget inn');
+  return {
+    'apikey': SUPABASE_KEY,
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json',
+    'Prefer': 'return=minimal'
+  };
+}
+
+async function restFetch(method, table, filter, body) {
+  const url = `${SUPABASE_URL}/rest/v1/${table}${filter ? '?' + filter : ''}`;
+  const res = await withTimeout(
+    fetch(url, { method, headers: restHeaders(), body: body ? JSON.stringify(body) : undefined }),
+    10000, `${table} ${method} tidsavbrudd`
+  );
+  if (!res.ok) throw new Error(`${table} ${method} feilet: ${res.status}`);
+}
+
 function trackSync(promise) {
   pendingSyncs++;
   setSyncStatus('⏳');
   promise
     .then(() => { if (--pendingSyncs === 0) setSyncStatus('✅'); })
-    .catch(err => { pendingSyncs = 0; setSyncStatus('❌'); console.error('Sync error:', err); });
+    .catch(err => { pendingSyncs = 0; setSyncStatus('❌'); console.error('Sync feil:', err); });
 }
 
 async function syncMealsForDate(date, meals) {
-  const { error: delErr } = await sb.from('meals').delete().eq('date', date).eq('user_id', uid());
-  if (delErr) throw new Error(`Slett feilet for ${date}: ${delErr.message}`);
+  await restFetch('DELETE', 'meals', `date=eq.${date}&user_id=eq.${uid()}`);
   if (meals && meals.length > 0) {
-    const { error: insErr } = await sb.from('meals').insert(
+    await restFetch('POST', 'meals', null,
       meals.map((m, i) => ({ date, user_id: uid(), name: m.name, calories: m.calories, protein: m.protein||0, carbs: m.carbs||0, fat: m.fat||0, sort_order: i }))
     );
-    if (insErr) throw new Error(`Lagring feilet for ${date}: ${insErr.message}`);
   }
 }
 
 async function syncSetting(key, value) {
-  const { error } = await sb.from('settings').upsert({ user_id: uid(), key, value: String(value) }, { onConflict: 'user_id,key' });
-  if (error) throw new Error(error.message);
+  const res = await withTimeout(
+    fetch(`${SUPABASE_URL}/rest/v1/settings?user_id=eq.${uid()}&key=eq.${key}`, {
+      method: 'DELETE', headers: restHeaders()
+    }), 10000, 'settings delete tidsavbrudd'
+  );
+  await restFetch('POST', 'settings', null, [{ user_id: uid(), key, value: String(value) }]);
+}
+
+async function manualRefresh() {
+  if (pendingSyncs > 0) return;
+  setSyncStatus('⏳');
+  await initDB();
+  setSyncStatus('✅');
+  renderToday();
+  renderWater();
 }
 
 // ── Storage ──────────────────────────────────────────────────────
