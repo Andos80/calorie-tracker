@@ -176,6 +176,15 @@
   }
   .dark-toggle:hover { background: rgba(255,255,255,.32); }
   .dark-toggle:active { transform: scale(.94); }
+  .lang-toggle {
+    background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.35);
+    color: #fff; border-radius: 14px; width: 44px; height: 44px;
+    cursor: pointer; font-size: 1.1rem; line-height: 1;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: background .15s, transform .15s;
+  }
+  .lang-toggle:hover { background: rgba(255,255,255,.32); }
+  .lang-toggle:active { transform: scale(.94); }
 
   /* ── Nav ── */
   nav {
@@ -540,18 +549,19 @@
 <body>
 
 <header>
-  <h1><span class="logo">🥗</span> Calorie Tracker</h1>
+  <h1><span class="logo">🥗</span> <span id="headerTitle">Calorie Tracker</span></h1>
   <div class="header-right">
+    <button class="lang-toggle" onclick="toggleLang()" id="langBtn" title="Change language">🇳🇴</button>
     <button class="dark-toggle" onclick="toggleDark()" id="darkBtn" title="Toggle dark mode">🌙</button>
   </div>
 </header>
 
 <nav>
-  <button class="active" onclick="showPage('today', this)">Today</button>
-  <button onclick="showPage('weight', this)">Weight</button>
-  <button onclick="showPage('search', this)">Search Food</button>
-  <button onclick="showPage('calendar', this)">Calendar</button>
-  <button onclick="showPage('history', this)">History</button>
+  <button class="active" onclick="showPage('today', this)" id="navToday">Today</button>
+  <button onclick="showPage('weight', this)" id="navWeight">Weight</button>
+  <button onclick="showPage('search', this)" id="navSearch">Search Food</button>
+  <button onclick="showPage('calendar', this)" id="navCalendar">Calendar</button>
+  <button onclick="showPage('history', this)" id="navHistory">History</button>
 </nav>
 
 <!-- TODAY -->
@@ -561,13 +571,13 @@
     <div class="settings-label">
       <span class="settings-icon">🎯</span>
       <div class="settings-text">
-        <strong>Daily calorie goal</strong>
-        <span>Set your target intake per day</span>
+        <strong id="goalLabel">Daily calorie goal</strong>
+        <span id="goalHint">Set your target intake per day</span>
       </div>
     </div>
     <div class="goal-edit">
       <input type="number" id="goalInput" min="500" max="10000" step="50" placeholder="Daily goal" />
-      <button class="btn-secondary" onclick="saveGoal()">Save</button>
+      <button class="btn-secondary" id="saveGoalBtn" onclick="saveGoal()">Save</button>
     </div>
   </div>
 
@@ -597,7 +607,7 @@
         <div class="ring-pct" id="ringPct">0%</div>
       </div>
       <div class="goal-hero">
-        <div class="hero-label">Calories eaten</div>
+        <div class="hero-label" id="heroLabel">Calories eaten</div>
         <div class="hero-value">
           <strong id="totalCal">0</strong>
           <span class="hero-goal">/ <span id="goalDisplay">2000</span> kcal</span>
@@ -607,29 +617,29 @@
     </div>
     <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
     <div class="macro-row">
-      <div class="macro protein"><span>Protein</span><strong id="totalProtein">0g</strong></div>
-      <div class="macro carbs"><span>Carbs</span><strong id="totalCarbs">0g</strong></div>
-      <div class="macro fat"><span>Fat</span><strong id="totalFat">0g</strong></div>
+      <div class="macro protein"><span id="macroProtein">Protein</span><strong id="totalProtein">0g</strong></div>
+      <div class="macro carbs"><span id="macroCarbs">Carbs</span><strong id="totalCarbs">0g</strong></div>
+      <div class="macro fat"><span id="macroFat">Fat</span><strong id="totalFat">0g</strong></div>
     </div>
   </div>
 
   <!-- Water tracker -->
   <div class="water-card">
     <div class="water-header">
-      <span class="water-title">💧 Water intake</span>
+      <span class="water-title" id="waterTitle">💧 Water intake</span>
       <span class="water-amount"><strong id="waterMl">0</strong> / <span id="waterGoalDisplay">2000</span> ml</span>
     </div>
     <div class="water-bar"><div class="water-fill" id="waterFill" style="width:0%"></div></div>
     <div class="water-glasses" id="waterGlasses"></div>
     <div class="water-btns">
-      <button class="water-btn" onclick="addWater(250)">+1 glass</button>
+      <button class="water-btn" id="waterBtn250" onclick="addWater(250)">+1 glass</button>
       <button class="water-btn" onclick="addWater(330)">+33 cl</button>
       <button class="water-btn" onclick="addWater(500)">+50 cl</button>
-      <button class="water-btn undo" onclick="addWater(-250)">↩ undo</button>
+      <button class="water-btn undo" id="waterUndoBtn" onclick="addWater(-250)">↩ undo</button>
       <div class="water-custom">
         <input type="number" id="waterCustom" min="1" max="2000" placeholder="ml" />
         <span>ml</span>
-        <button class="water-btn" onclick="addWaterCustom()" style="margin:0">+Add</button>
+        <button class="water-btn" id="waterAddBtn" onclick="addWaterCustom()" style="margin:0">+Add</button>
       </div>
     </div>
   </div>
@@ -639,16 +649,16 @@
 
   <!-- Library quick-add -->
   <div class="add-card">
-    <h3>Add from library</h3>
+    <h3 id="libraryTitle">Add from library</h3>
     <div class="form-row">
       <div class="form-group" style="flex:3;min-width:180px">
-        <label>Food</label>
+        <label id="libFoodLbl">Food</label>
         <select id="librarySelect" onchange="onLibrarySelect()">
           <option value="">— choose a food —</option>
         </select>
       </div>
       <div class="form-group" style="max-width:160px">
-        <label>Amount</label>
+        <label id="libAmountLbl">Amount</label>
         <div class="amount-unit">
           <input type="number" id="libraryAmount" value="1" min="0.1" step="1" oninput="updateLibraryPreview()" />
           <span class="unit-badge" id="libraryUnitBadge">—</span>
@@ -660,40 +670,40 @@
       <span class="cal-label">kcal</span>
       <span class="macro-mini" id="libMacroMini"></span>
     </div>
-    <button class="btn-primary" onclick="addFromLibrary()">Add to Today</button>
+    <button class="btn-primary" id="libAddBtn" onclick="addFromLibrary()">Add to Today</button>
   </div>
 
   <!-- Export / Import -->
   <div class="add-card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem">
     <div>
-      <div style="font-size:.95rem;font-weight:600;margin-bottom:.2rem">Your data</div>
-      <div style="font-size:.78rem;color:var(--muted)">Back up your meals &amp; water, or restore from a previous backup.</div>
+      <div style="font-size:.95rem;font-weight:600;margin-bottom:.2rem" id="dataTitle">Your data</div>
+      <div style="font-size:.78rem;color:var(--muted)" id="dataHint">Back up your meals &amp; water, or restore from a previous backup.</div>
     </div>
     <div style="display:flex;gap:.6rem;flex-wrap:wrap">
-      <button class="btn-primary" style="margin-top:0" onclick="exportData()">⬇ Export</button>
-      <button class="btn-secondary" onclick="importData()">⬆ Import</button>
+      <button class="btn-primary" id="exportBtn" style="margin-top:0" onclick="exportData()">⬇ Export</button>
+      <button class="btn-secondary" id="importBtn" onclick="importData()">⬆ Import</button>
     </div>
   </div>
 
   <!-- Manual add -->
   <div class="add-card">
-    <h3>Add manually</h3>
+    <h3 id="manualTitle">Add manually</h3>
     <div class="form-row">
       <div class="form-group" style="flex:2;min-width:160px">
-        <label>Food name</label>
+        <label id="manualNameLbl">Food name</label>
         <input type="text" id="addName" placeholder="e.g. Protein shake" onkeydown="if(event.key==='Enter')addMeal()" />
       </div>
       <div class="form-group">
-        <label>Calories (kcal)</label>
+        <label id="manualCalLbl">Calories (kcal)</label>
         <input type="number" id="addCal" min="0" placeholder="0" />
       </div>
     </div>
     <div class="form-row">
-      <div class="form-group"><label>Protein (g)</label><input type="number" id="addProtein" min="0" placeholder="0" /></div>
-      <div class="form-group"><label>Carbs (g)</label><input type="number" id="addCarbs" min="0" placeholder="0" /></div>
-      <div class="form-group"><label>Fat (g)</label><input type="number" id="addFat" min="0" placeholder="0" /></div>
+      <div class="form-group"><label id="manualProtLbl">Protein (g)</label><input type="number" id="addProtein" min="0" placeholder="0" /></div>
+      <div class="form-group"><label id="manualCarbLbl">Carbs (g)</label><input type="number" id="addCarbs" min="0" placeholder="0" /></div>
+      <div class="form-group"><label id="manualFatLbl">Fat (g)</label><input type="number" id="addFat" min="0" placeholder="0" /></div>
     </div>
-    <button class="btn-primary" onclick="addMeal()">Add Meal</button>
+    <button class="btn-primary" id="addMealBtn" onclick="addMeal()">Add Meal</button>
   </div>
 </div>
 
@@ -702,36 +712,36 @@
 
   <!-- Log form -->
   <div class="add-card">
-    <h3>Log weight</h3>
+    <h3 id="weightLogTitle">Log weight</h3>
     <div class="form-row">
       <div class="form-group">
-        <label>Date</label>
+        <label id="weightDateLbl">Date</label>
         <input type="date" id="weightDate" />
       </div>
       <div class="form-group">
-        <label>Weight (kg)</label>
+        <label id="weightKgLbl">Weight (kg)</label>
         <input type="number" id="weightInput" min="20" max="300" step="0.1" placeholder="e.g. 82.5" />
       </div>
       <div class="form-group">
-        <label>Goal weight (kg)</label>
+        <label id="weightGoalLbl">Goal weight (kg)</label>
         <input type="number" id="weightGoalInput" min="20" max="300" step="0.1" placeholder="optional" />
       </div>
     </div>
-    <button class="btn-primary" onclick="logWeight()">Save weight</button>
+    <button class="btn-primary" id="saveWeightBtn" onclick="logWeight()">Save weight</button>
   </div>
 
   <!-- Stats -->
   <div class="weight-stats" id="weightStats" style="display:none">
-    <div class="wstat"><span class="wstat-icon">🚀</span><span>Starting</span><strong id="wStatStart">—</strong></div>
-    <div class="wstat"><span class="wstat-icon">⚖️</span><span>Current</span><strong id="wStatCurrent">—</strong></div>
-    <div class="wstat"><span class="wstat-icon">📊</span><span>Total change</span><strong id="wStatChange">—</strong></div>
-    <div class="wstat"><span class="wstat-icon">🎯</span><span>Goal</span><strong id="wStatGoal">—</strong></div>
+    <div class="wstat"><span class="wstat-icon">🚀</span><span id="wStatStartLbl">Starting</span><strong id="wStatStart">—</strong></div>
+    <div class="wstat"><span class="wstat-icon">⚖️</span><span id="wStatCurrentLbl">Current</span><strong id="wStatCurrent">—</strong></div>
+    <div class="wstat"><span class="wstat-icon">📊</span><span id="wStatChangeLbl">Total change</span><strong id="wStatChange">—</strong></div>
+    <div class="wstat"><span class="wstat-icon">🎯</span><span id="wStatGoalLbl">Goal</span><strong id="wStatGoal">—</strong></div>
   </div>
 
   <!-- Chart -->
   <div class="chart-card" id="weightChartCard" style="display:none;margin-bottom:1rem">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-      <h3 style="font-size:.95rem;font-weight:600">Weight over time</h3>
+      <h3 style="font-size:.95rem;font-weight:600" id="weightChartTitle">Weight over time</h3>
       <div class="period-btns" id="weightPeriodBtns">
         <button class="period-btn active" onclick="renderWeightChart(30,this)">1M</button>
         <button class="period-btn" onclick="renderWeightChart(90,this)">3M</button>
@@ -750,20 +760,20 @@
 <div id="page-search" class="page">
   <div class="search-bar">
     <input type="text" id="searchInput" placeholder="Search library or type to filter…" oninput="filterLibrary()" onkeydown="if(event.key==='Enter')doOnlineSearch()" />
-    <button class="btn-secondary" onclick="doOnlineSearch()">Search online</button>
+    <button class="btn-secondary" id="searchOnlineBtn" onclick="doOnlineSearch()">Search online</button>
   </div>
   <div class="category-chips" id="categoryChips"></div>
   <div id="searchResults"></div>
   <div id="logPanel" class="log-panel" style="display:none">
     <h4 id="logPanelTitle">Log food</h4>
     <div class="form-row">
-      <div class="form-group"><label>Amount (g)</label><input type="number" id="logGrams" value="100" min="1" oninput="updateLogPreview()" /></div>
+      <div class="form-group"><label id="logAmountLbl">Amount (g)</label><input type="number" id="logGrams" value="100" min="1" oninput="updateLogPreview()" /></div>
       <div class="form-group"><label>Calories</label><input type="number" id="logCalPreview" readonly /></div>
       <div class="form-group"><label>Protein (g)</label><input type="number" id="logProtPreview" readonly /></div>
       <div class="form-group"><label>Carbs (g)</label><input type="number" id="logCarbPreview" readonly /></div>
       <div class="form-group"><label>Fat (g)</label><input type="number" id="logFatPreview" readonly /></div>
     </div>
-    <button class="btn-primary" onclick="logSelectedFood()">Log to Today</button>
+    <button class="btn-primary" id="logFoodBtn" onclick="logSelectedFood()">Log to Today</button>
   </div>
 </div>
 
@@ -777,19 +787,19 @@
     </div>
     <div class="cal-grid" id="calGrid"></div>
     <div class="cal-legend">
-      <span><span class="legend-dot" style="background:var(--cal-under-dot)"></span> Under goal</span>
-      <span><span class="legend-dot" style="background:var(--cal-over-dot)"></span> Over goal</span>
-      <span><span class="legend-dot" style="background:var(--surface2);outline:2px solid var(--cal-today-ring);outline-offset:-2px"></span> Today</span>
+      <span><span class="legend-dot" style="background:var(--cal-under-dot)"></span> <span id="legUnder">Under goal</span></span>
+      <span><span class="legend-dot" style="background:var(--cal-over-dot)"></span> <span id="legOver">Over goal</span></span>
+      <span><span class="legend-dot" style="background:var(--surface2);outline:2px solid var(--cal-today-ring);outline-offset:-2px"></span> <span id="legToday">Today</span></span>
     </div>
   </div>
-  <p style="font-size:.78rem;color:var(--muted);text-align:center;margin-top:.75rem">Tap any day to view or log meals for that date.</p>
+  <p style="font-size:.78rem;color:var(--muted);text-align:center;margin-top:.75rem" id="calTip">Tap any day to view or log meals for that date.</p>
 </div>
 
 <!-- HISTORY -->
 <div id="page-history" class="page">
   <div class="chart-card">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-      <h3 style="font-size:.95rem;font-weight:600">Calorie history</h3>
+      <h3 style="font-size:.95rem;font-weight:600" id="historyChartTitle">Calorie history</h3>
       <div class="period-btns">
         <button class="period-btn active" onclick="renderChart(7,this)">7d</button>
         <button class="period-btn" onclick="renderChart(14,this)">14d</button>
@@ -922,11 +932,243 @@ const FOOD_LIBRARY = [
   { name:'Ketchup',            cal:112, p:1.4, c:27,  f:0.1, cat:'Snacks & Other', unit:'tbsp',  ug:17  },
   { name:'Mayonnaise',         cal:680, p:1.0, c:0.6, f:75,  cat:'Snacks & Other', unit:'tbsp',  ug:14  },
   { name:'Hummus',             cal:166, p:8.0, c:14,  f:10,  cat:'Snacks & Other', unit:'tbsp',  ug:30  },
+  // ── Norske matvarer ──────────────────────────────────────────────
+  // Brød & Pålegg
+  { name:'Grovbrød',           cal:220, p:9.0, c:39,  f:3.0, cat:'Brød & Pålegg',  unit:'slice', ug:35  },
+  { name:'Loff',               cal:265, p:8.0, c:53,  f:2.5, cat:'Brød & Pålegg',  unit:'slice', ug:30  },
+  { name:'Knekkebrød',         cal:360, p:11,  c:65,  f:5.0, cat:'Brød & Pålegg',  unit:'pcs',   ug:10  },
+  { name:'Smør',               cal:717, p:0.9, c:0.1, f:81,  cat:'Brød & Pålegg',  unit:'tbsp',  ug:14  },
+  { name:'Margarin',           cal:720, p:0.2, c:0.3, f:80,  cat:'Brød & Pålegg',  unit:'tbsp',  ug:14  },
+  { name:'Gulost (Norvegia)',  cal:355, p:27,  c:0,   f:28,  cat:'Brød & Pålegg',  unit:'slice', ug:20  },
+  { name:'Brunost',            cal:387, p:9.7, c:43,  f:20,  cat:'Brød & Pålegg',  unit:'slice', ug:15  },
+  { name:'Skinke',             cal:120, p:18,  c:1.0, f:5.0, cat:'Brød & Pålegg',  unit:'slice', ug:25  },
+  { name:'Salami',             cal:380, p:20,  c:2.0, f:33,  cat:'Brød & Pålegg',  unit:'slice', ug:15  },
+  { name:'Leverpostei',        cal:237, p:10,  c:6.0, f:20,  cat:'Brød & Pålegg',  unit:'tbsp',  ug:20  },
+  { name:'Nugatti',            cal:547, p:6.4, c:57,  f:31,  cat:'Brød & Pålegg',  unit:'tbsp',  ug:15  },
+  { name:'Syltetøy',           cal:250, p:0.5, c:62,  f:0.1, cat:'Brød & Pålegg',  unit:'tbsp',  ug:15  },
+  // Middag
+  { name:'Kokt pasta',         cal:158, p:5.8, c:31,  f:0.9, cat:'Middag',          unit:'g',     ug:1   },
+  { name:'Ris (kokt)',         cal:130, p:2.7, c:28,  f:0.3, cat:'Middag',          unit:'g',     ug:1   },
+  { name:'Poteter (kokt)',     cal:87,  p:1.9, c:20,  f:0.1, cat:'Middag',          unit:'g',     ug:1   },
+  { name:'Kyllingfilet',       cal:165, p:31,  c:0,   f:3.6, cat:'Middag',          unit:'g',     ug:1   },
+  { name:'Kjøttdeig',         cal:215, p:21,  c:0,   f:14,  cat:'Middag',          unit:'g',     ug:1   },
+  { name:'Laks',               cal:208, p:20,  c:0,   f:13,  cat:'Middag',          unit:'g',     ug:1   },
+  { name:'Fiskepinner',        cal:200, p:12,  c:18,  f:9.0, cat:'Middag',          unit:'pcs',   ug:40  },
+  { name:'Grandiosa',          cal:230, p:10,  c:28,  f:9.0, cat:'Middag',          unit:'g',     ug:1   },
+  { name:'Taco (kjøtt)',      cal:240, p:18,  c:8.0, f:16,  cat:'Middag',          unit:'g',     ug:1   },
+  { name:'Pølse i brød',      cal:265, p:10,  c:28,  f:13,  cat:'Middag',          unit:'pcs',   ug:115 },
+  { name:'Burger',             cal:295, p:17,  c:23,  f:15,  cat:'Middag',          unit:'pcs',   ug:200 },
+  // Norsk Meieri
+  { name:'Lettmelk',           cal:42,  p:3.5, c:4.8, f:1.5, cat:'Norsk Meieri',    unit:'glass', ug:200 },
+  { name:'Helmelk',            cal:61,  p:3.2, c:4.8, f:3.3, cat:'Norsk Meieri',    unit:'glass', ug:200 },
+  { name:'Yoghurt naturell',   cal:61,  p:3.5, c:4.7, f:3.3, cat:'Norsk Meieri',    unit:'g',     ug:1   },
+  { name:'Yoghurt med smak',   cal:80,  p:3.5, c:13,  f:1.5, cat:'Norsk Meieri',    unit:'g',     ug:1   },
+  { name:'Skyr',               cal:57,  p:11,  c:3.5, f:0.2, cat:'Norsk Meieri',    unit:'g',     ug:1   },
+  { name:'Fløte',             cal:331, p:2.3, c:3.0, f:35,  cat:'Norsk Meieri',    unit:'tbsp',  ug:15  },
+  { name:'Iskrem',             cal:207, p:3.5, c:24,  f:11,  cat:'Norsk Meieri',    unit:'scoop', ug:65  },
+  // Norsk Snacks
+  { name:'Potetchips',         cal:536, p:7.0, c:53,  f:35,  cat:'Norsk Snacks',    unit:'g',     ug:1   },
+  { name:'Sørlandschips',     cal:524, p:6.5, c:55,  f:33,  cat:'Norsk Snacks',    unit:'g',     ug:1   },
+  { name:'Tortillachips',      cal:482, p:7.0, c:63,  f:23,  cat:'Norsk Snacks',    unit:'g',     ug:1   },
+  { name:'Gelégodteri',       cal:328, p:5.0, c:76,  f:0.5, cat:'Norsk Snacks',    unit:'g',     ug:1   },
+  { name:'Sjokoladebiter',     cal:530, p:6.0, c:60,  f:30,  cat:'Norsk Snacks',    unit:'g',     ug:1   },
+  { name:'Lakris',             cal:314, p:5.0, c:76,  f:0.3, cat:'Norsk Snacks',    unit:'g',     ug:1   },
+  { name:'Skumgodteri',        cal:336, p:4.0, c:78,  f:0,   cat:'Norsk Snacks',    unit:'g',     ug:1   },
+  { name:'Smågodt mix',       cal:340, p:3.5, c:73,  f:3.0, cat:'Norsk Snacks',    unit:'g',     ug:1   },
+  { name:'Melkesjokolade',     cal:535, p:8.0, c:59,  f:30,  cat:'Norsk Snacks',    unit:'g',     ug:1   },
+  { name:'Kvikk Lunsj',        cal:492, p:7.5, c:60,  f:24,  cat:'Norsk Snacks',    unit:'pcs',   ug:47  },
+  { name:'Snickers',           cal:488, p:7.5, c:60,  f:25,  cat:'Norsk Snacks',    unit:'pcs',   ug:50  },
+  { name:'Smash',              cal:510, p:6.0, c:60,  f:27,  cat:'Norsk Snacks',    unit:'pcs',   ug:45  },
+  { name:'Kinderegg',          cal:528, p:7.0, c:58,  f:29,  cat:'Norsk Snacks',    unit:'pcs',   ug:20  },
+  // Norsk Drikke
+  { name:'Cola',               cal:42,  p:0,   c:11,  f:0,   cat:'Norsk Drikke',    unit:'glass', ug:250 },
+  { name:'Cola Zero',          cal:1,   p:0,   c:0.1, f:0,   cat:'Norsk Drikke',    unit:'glass', ug:250 },
+  { name:'Appelsinjuice',      cal:45,  p:0.7, c:10,  f:0.2, cat:'Norsk Drikke',    unit:'glass', ug:200 },
+  { name:'Energidrikk',        cal:45,  p:0,   c:11,  f:0,   cat:'Norsk Drikke',    unit:'glass', ug:250 },
+  { name:'Øl',                cal:43,  p:0.5, c:3.5, f:0,   cat:'Norsk Drikke',    unit:'cl',    ug:10  },
+  { name:'Vin',                cal:85,  p:0.1, c:2.6, f:0,   cat:'Norsk Drikke',    unit:'cl',    ug:10  },
+  // Fast Food
+  { name:'Big Mac',            cal:257, p:13,  c:24,  f:12,  cat:'Fast Food',        unit:'pcs',   ug:215 },
+  { name:'Pommes frites',      cal:312, p:3.4, c:41,  f:15,  cat:'Fast Food',        unit:'g',     ug:1   },
+  { name:'Pizza takeaway',     cal:260, p:11,  c:30,  f:11,  cat:'Fast Food',        unit:'g',     ug:1   },
+  { name:'Kebab',              cal:240, p:15,  c:20,  f:11,  cat:'Fast Food',        unit:'pcs',   ug:300 },
 ];
 
 const UNIT_LABELS    = { g:'g', pcs:'pcs', glass:'glass', slice:'slice', tbsp:'tbsp', cup:'cup', cl:'cl', scoop:'scoop' };
 const ALL_CATEGORIES = ['All', ...new Set(FOOD_LIBRARY.map(f => f.cat))];
 let activeCategory   = 'All';
+
+// ── Language system ──────────────────────────────────────────────
+let lang = localStorage.getItem('ct_lang') || 'en';
+
+const CAT_LABELS = {
+  'All':            { en:'All',                no:'Alle' },
+  'Eggs & Dairy':   { en:'Eggs & Dairy',       no:'Egg & Meieri' },
+  'Meat & Fish':    { en:'Meat & Fish',         no:'Kjøtt & Fisk' },
+  'Bread & Grains': { en:'Bread & Grains',      no:'Brød & Korn' },
+  'Vegetables':     { en:'Vegetables',           no:'Grønnsaker' },
+  'Fruits':         { en:'Fruits',               no:'Frukt' },
+  'Drinks':         { en:'Drinks',               no:'Drikke' },
+  'Snacks & Other': { en:'Snacks & Other',       no:'Snacks & Annet' },
+  'Brød & Pålegg':  { en:'Bread & Toppings',    no:'Brød & Pålegg' },
+  'Middag':         { en:'Norwegian Dinner',     no:'Middag' },
+  'Norsk Meieri':   { en:'Norwegian Dairy',      no:'Meieri' },
+  'Norsk Snacks':   { en:'Norwegian Snacks',     no:'Snacks' },
+  'Norsk Drikke':   { en:'Norwegian Drinks',     no:'Norsk Drikke' },
+  'Fast Food':      { en:'Fast Food',            no:'Fast Food' },
+};
+
+const FOOD_NAME_NO = {
+  'Egg, whole':'Egg (helt)', 'Egg white':'Eggehvite', 'Milk, whole':'Helmelk',
+  'Milk, skimmed':'Skummet melk', 'Cheddar cheese':'Cheddar', 'Mozzarella':'Mozzarella',
+  'Cottage cheese':'Cottage cheese', 'Cream cheese':'Kremost', 'Greek yogurt':'Gresk yoghurt',
+  'Natural yogurt':'Naturell yoghurt', 'Butter':'Smør', 'Sour cream':'Rømme',
+  'Chicken breast':'Kyllingfilet', 'Chicken thigh':'Kyllinglår', 'Turkey breast':'Kalkunfilet',
+  'Beef mince (lean)':'Kjøttdeig (mager)', 'Beef steak':'Biff', 'Pork chop':'Svinekotelett',
+  'Ham':'Skinke', 'Bacon':'Bacon', 'Sausage':'Pølse', 'Salmon':'Laks',
+  'Tuna (canned)':'Tunfisk (hermetisk)', 'Tuna (fresh)':'Tunfisk (fersk)',
+  'Cod':'Torsk', 'Shrimp':'Reker', 'Mackerel':'Makrell',
+  'Hákarl (fermented shark)':'Hákarl (fermentert hai)',
+  'White bread':'Loff', 'Whole wheat bread':'Grovbrød', 'Bagel':'Bagel',
+  'Tortilla wrap':'Tortilla', 'White rice (cooked)':'Hvit ris (kokt)',
+  'Brown rice (cooked)':'Brun ris (kokt)', 'Pasta (cooked)':'Pasta (kokt)',
+  'Oats':'Havregryn', 'Cornflakes':'Cornflakes', 'Potato (boiled)':'Potet (kokt)',
+  'French fries':'Pommes frites',
+  'Avocado':'Avokado', 'Broccoli':'Brokkoli', 'Carrot':'Gulrot', 'Tomato':'Tomat',
+  'Cucumber':'Agurk', 'Lettuce':'Salat', 'Spinach':'Spinat', 'Sweet potato':'Søtpotet',
+  'Onion':'Løk', 'Bell pepper':'Paprika', 'Corn (cooked)':'Mais (kokt)', 'Mushrooms':'Sopp',
+  'Apple':'Eple', 'Banana':'Banan', 'Orange':'Appelsin', 'Strawberry':'Jordbær',
+  'Grapes':'Druer', 'Mango':'Mango', 'Blueberry':'Blåbær',
+  'Watermelon':'Vannmelon', 'Pineapple':'Ananas',
+  'Water':'Vann', 'Orange juice':'Appelsinjuice', 'Apple juice':'Eplejuice',
+  'Coca-Cola':'Coca-Cola', 'Whole milk':'Helmelk', 'Skimmed milk':'Skummet melk',
+  'Coffee (black)':'Kaffe (sort)', 'Coffee w/ milk':'Kaffe med melk',
+  'Smoothie (fruit)':'Smoothie (frukt)', 'Beer (lager)':'Øl (lager)',
+  'Beer (strong/IPA)':'Øl (sterk/IPA)', 'Wine (red)':'Rødvin',
+  'Wine (white)':'Hvitvin', 'Wine (rosé)':'Rosévin',
+  'Peanuts':'Peanøtter', 'Peanut butter':'Peanøttsmør',
+  'Ice cream (vanilla)':'Iskrem (vanilje)', 'Almonds':'Mandler', 'Walnuts':'Valnøtter',
+  'Dark chocolate':'Mørk sjokolade', 'Milk chocolate':'Melkesjokolade',
+  'Potato chips':'Potetchips', 'Olive oil':'Olivenolje',
+  'Ketchup':'Ketchup', 'Mayonnaise':'Majones', 'Hummus':'Hummus',
+};
+
+const T_DATA = {
+  en: {
+    title:'Calorie Tracker',
+    nav:{ today:'Today', weight:'Weight', search:'Search Food', calendar:'Calendar', history:'History' },
+    goal:{ label:'Daily calorie goal', hint:'Set your target intake per day', save:'Save' },
+    hero:{ label:'Calories eaten', protein:'Protein', carbs:'Carbs', fat:'Fat', left:'kcal left', over:'kcal over' },
+    water:{ title:'💧 Water intake', glass:'+1 glass', undo:'↩ undo', add:'+Add' },
+    library:{ title:'Add from library', food:'Food', amount:'Amount', addBtn:'Add to Today', choose:'— choose a food —' },
+    data:{ title:'Your data', hint:'Back up your meals & water, or restore from a previous backup.', export:'⬇ Export', import:'⬆ Import' },
+    manual:{ title:'Add manually', name:'Food name', namePh:'e.g. Protein shake', cal:'Calories (kcal)', protein:'Protein (g)', carbs:'Carbs (g)', fat:'Fat (g)', addBtn:'Add Meal' },
+    weight:{ logTitle:'Log weight', date:'Date', kg:'Weight (kg)', goal:'Goal weight (kg)', save:'Save weight', starting:'Starting', current:'Current', change:'Total change', goalLabel:'Goal', chart:'Weight over time', empty:'No entries yet. Log your first weight above.', first:'first entry' },
+    history:{ chart:'Calorie history' },
+    search:{ ph:'Search library or type to filter…', online:'Search online', log:'Log food', amount:'Amount (g)', logBtn:'Log to Today', empty:'No foods found. Try "Search online" for more results.', searching:'Searching online…', failed:'Search failed. Check your internet connection.', onlineFor:'Online results for', inLib:'result', inLibPl:'results', inLibSuffix:' in library' },
+    calendar:{ tip:'Tap any day to view or log meals for that date.', under:'Under goal', over:'Over goal', today:'Today', days:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] },
+    empty:'No meals logged yet.',
+    yesterday:'Yesterday',
+    alerts:{ chooseFood:'Please choose a food.', validAmount:'Please enter a valid amount.', nameAndCal:'Please enter a name and calories.', validWeight:'Please enter a valid weight.', logged:'Logged to today!', imported:'Data imported successfully!', importFailed:'Could not read file. Please select a valid Calorie Tracker backup.' },
+  },
+  no: {
+    title:'Kaloriteller',
+    nav:{ today:'I dag', weight:'Vekt', search:'Søk matvare', calendar:'Kalender', history:'Historikk' },
+    goal:{ label:'Daglig kalori-mål', hint:'Sett ditt mål per dag', save:'Lagre' },
+    hero:{ label:'Kalorier spist', protein:'Protein', carbs:'Karbohydrater', fat:'Fett', left:'kcal igjen', over:'kcal over' },
+    water:{ title:'💧 Vanninntak', glass:'+1 glass', undo:'↩ angre', add:'+Legg til' },
+    library:{ title:'Legg til fra bibliotek', food:'Matvare', amount:'Mengde', addBtn:'Legg til i dag', choose:'— velg en matvare —' },
+    data:{ title:'Dine data', hint:'Sikkerhetskopier måltidene dine, eller gjenopprett fra en tidligere kopi.', export:'⬇ Eksporter', import:'⬆ Importer' },
+    manual:{ title:'Legg til manuelt', name:'Matvare', namePh:'f.eks. Proteinshake', cal:'Kalorier (kcal)', protein:'Protein (g)', carbs:'Karbohydrater (g)', fat:'Fett (g)', addBtn:'Legg til måltid' },
+    weight:{ logTitle:'Logg vekt', date:'Dato', kg:'Vekt (kg)', goal:'Målvekt (kg)', save:'Lagre vekt', starting:'Start', current:'Nåværende', change:'Total endring', goalLabel:'Mål', chart:'Vekt over tid', empty:'Ingen oppføringer ennå. Logg din første vekt ovenfor.', first:'første oppføring' },
+    history:{ chart:'Kalori-historikk' },
+    search:{ ph:'Søk i biblioteket…', online:'Søk online', log:'Logg matvare', amount:'Mengde (g)', logBtn:'Logg til i dag', empty:'Ingen matvarer funnet. Prøv "Søk online" for flere resultater.', searching:'Søker online…', failed:'Søk feilet. Sjekk internettforbindelsen din.', onlineFor:'Nettresultater for', inLib:'resultat', inLibPl:'resultater', inLibSuffix:' i biblioteket' },
+    calendar:{ tip:'Trykk på en dag for å vise eller logge måltider.', under:'Under mål', over:'Over mål', today:'I dag', days:['Man','Tir','Ons','Tor','Fre','Lør','Søn'] },
+    empty:'Ingen måltider logget ennå.',
+    yesterday:'I går',
+    alerts:{ chooseFood:'Vennligst velg en matvare.', validAmount:'Vennligst oppgi en gyldig mengde.', nameAndCal:'Vennligst oppgi navn og kalorier.', validWeight:'Vennligst oppgi en gyldig vekt.', logged:'Logget til i dag!', imported:'Data importert!', importFailed:'Kunne ikke lese filen. Velg en gyldig sikkerhetskopi.' },
+  }
+};
+
+function T(path) {
+  const keys = path.split('.');
+  let obj = T_DATA[lang];
+  for (const k of keys) obj = obj?.[k];
+  return obj ?? path;
+}
+
+function getCatLabel(cat) { return (CAT_LABELS[cat]?.[lang]) || cat; }
+function getFoodName(food) { return lang === 'no' && FOOD_NAME_NO[food.name] ? FOOD_NAME_NO[food.name] : food.name; }
+
+function toggleLang() { setLang(lang === 'en' ? 'no' : 'en'); }
+
+function setLang(l) {
+  lang = l;
+  localStorage.setItem('ct_lang', l);
+  document.getElementById('langBtn').textContent = l === 'en' ? '🇳🇴' : '🇬🇧';
+  applyTranslations();
+  buildLibrarySelect();
+  initCategoryChips();
+  filterLibrary();
+  renderToday();
+  renderWater();
+  renderCalendar();
+}
+
+function applyTranslations() {
+  document.getElementById('headerTitle').textContent = T('title');
+  document.getElementById('navToday').textContent    = T('nav.today');
+  document.getElementById('navWeight').textContent   = T('nav.weight');
+  document.getElementById('navSearch').textContent   = T('nav.search');
+  document.getElementById('navCalendar').textContent = T('nav.calendar');
+  document.getElementById('navHistory').textContent  = T('nav.history');
+  document.getElementById('goalLabel').textContent   = T('goal.label');
+  document.getElementById('goalHint').textContent    = T('goal.hint');
+  document.getElementById('saveGoalBtn').textContent = T('goal.save');
+  document.getElementById('heroLabel').textContent   = T('hero.label');
+  document.getElementById('macroProtein').textContent = T('hero.protein');
+  document.getElementById('macroCarbs').textContent  = T('hero.carbs');
+  document.getElementById('macroFat').textContent    = T('hero.fat');
+  document.getElementById('waterTitle').textContent  = T('water.title');
+  document.getElementById('waterBtn250').textContent = T('water.glass');
+  document.getElementById('waterUndoBtn').textContent= T('water.undo');
+  document.getElementById('waterAddBtn').textContent = T('water.add');
+  document.getElementById('libraryTitle').textContent= T('library.title');
+  document.getElementById('libFoodLbl').textContent  = T('library.food');
+  document.getElementById('libAmountLbl').textContent= T('library.amount');
+  document.getElementById('libAddBtn').textContent   = T('library.addBtn');
+  document.getElementById('dataTitle').textContent   = T('data.title');
+  document.getElementById('dataHint').textContent    = T('data.hint');
+  document.getElementById('exportBtn').textContent   = T('data.export');
+  document.getElementById('importBtn').textContent   = T('data.import');
+  document.getElementById('manualTitle').textContent = T('manual.title');
+  document.getElementById('manualNameLbl').textContent = T('manual.name');
+  document.getElementById('addName').placeholder     = T('manual.namePh');
+  document.getElementById('manualCalLbl').textContent= T('manual.cal');
+  document.getElementById('manualProtLbl').textContent = T('manual.protein');
+  document.getElementById('manualCarbLbl').textContent = T('manual.carbs');
+  document.getElementById('manualFatLbl').textContent= T('manual.fat');
+  document.getElementById('addMealBtn').textContent  = T('manual.addBtn');
+  document.getElementById('weightLogTitle').textContent = T('weight.logTitle');
+  document.getElementById('weightDateLbl').textContent  = T('weight.date');
+  document.getElementById('weightKgLbl').textContent    = T('weight.kg');
+  document.getElementById('weightGoalLbl').textContent  = T('weight.goal');
+  document.getElementById('saveWeightBtn').textContent  = T('weight.save');
+  document.getElementById('wStatStartLbl').textContent  = T('weight.starting');
+  document.getElementById('wStatCurrentLbl').textContent = T('weight.current');
+  document.getElementById('wStatChangeLbl').textContent = T('weight.change');
+  document.getElementById('wStatGoalLbl').textContent   = T('weight.goalLabel');
+  document.getElementById('weightChartTitle').textContent = T('weight.chart');
+  document.getElementById('historyChartTitle').textContent = T('history.chart');
+  document.getElementById('searchInput').placeholder  = T('search.ph');
+  document.getElementById('searchOnlineBtn').textContent = T('search.online');
+  document.getElementById('logAmountLbl').textContent = T('search.amount');
+  document.getElementById('logFoodBtn').textContent   = T('search.logBtn');
+  document.getElementById('calTip').textContent       = T('calendar.tip');
+  document.getElementById('legUnder').textContent     = T('calendar.under');
+  document.getElementById('legOver').textContent      = T('calendar.over');
+  document.getElementById('legToday').textContent     = T('calendar.today');
+}
 let selectedFood     = null;
 let histChart        = null;
 let currentDate      = todayISO();
@@ -938,10 +1180,11 @@ function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').re
 function fmtLabel(iso) {
   const [y,m,d] = iso.split('-').map(Number);
   const dt = new Date(y, m-1, d);
-  if (iso === todayISO()) return 'Today';
+  if (iso === todayISO()) return T('calendar.today');
   const yest = new Date(); yest.setDate(yest.getDate()-1);
-  if (iso === yest.toISOString().split('T')[0]) return 'Yesterday';
-  return dt.toLocaleDateString(undefined, { weekday:'short', month:'short', day:'numeric' });
+  if (iso === yest.toISOString().split('T')[0]) return T('yesterday');
+  const locale = lang === 'no' ? 'nb-NO' : undefined;
+  return dt.toLocaleDateString(locale, { weekday:'short', month:'short', day:'numeric' });
 }
 
 // ── Navigation ───────────────────────────────────────────────────
@@ -1027,7 +1270,7 @@ function renderToday() {
         <span class="meal-cal">${Math.round(m.calories)} kcal</span>
         <button class="btn-del" onclick="deleteMeal(${i})">&#x2715;</button>
       </div>
-    </div>`).join('') : '<div class="empty">No meals logged yet.</div>';
+    </div>`).join('') : `<div class="empty">${T('empty')}</div>`;
 
   const total   = meals.reduce((s,m) => s + m.calories, 0);
   const protein = meals.reduce((s,m) => s + (m.protein||0), 0);
@@ -1049,14 +1292,14 @@ function renderToday() {
   document.getElementById('calRing').className = 'cal-ring' + (total > goal ? ' over' : '');
   const remEl = document.getElementById('remainingLabel');
   remEl.textContent = rem >= 0
-    ? `${Math.round(rem)} kcal left` : `${Math.round(-rem)} kcal over`;
+    ? `${Math.round(rem)} ${T('hero.left')}` : `${Math.round(-rem)} ${T('hero.over')}`;
   remEl.className = 'remaining' + (rem < 0 ? ' over' : '');
 }
 
 function addMeal() {
   const name = document.getElementById('addName').value.trim();
   const cal  = parseFloat(document.getElementById('addCal').value);
-  if (!name || isNaN(cal) || cal < 0) { alert('Please enter a name and calories.'); return; }
+  if (!name || isNaN(cal) || cal < 0) { alert(T('alerts.nameAndCal')); return; }
   const data = loadData();
   if (!data[currentDate]) data[currentDate] = [];
   data[currentDate].push({ name, calories: cal,
@@ -1081,10 +1324,10 @@ function deleteMeal(index) {
 function buildLibrarySelect() {
   const byCategory = {};
   FOOD_LIBRARY.forEach((f, i) => { (byCategory[f.cat] = byCategory[f.cat]||[]).push({f,i}); });
-  let html = '<option value="">— choose a food —</option>';
+  let html = `<option value="">${esc(T('library.choose'))}</option>`;
   for (const [cat, items] of Object.entries(byCategory)) {
-    html += `<optgroup label="${esc(cat)}">`;
-    items.forEach(({f,i}) => { html += `<option value="${i}">${esc(f.name)}</option>`; });
+    html += `<optgroup label="${esc(getCatLabel(cat))}">`;
+    items.forEach(({f,i}) => { html += `<option value="${i}">${esc(getFoodName(f))}</option>`; });
     html += '</optgroup>';
   }
   document.getElementById('librarySelect').innerHTML = html;
@@ -1114,16 +1357,16 @@ function updateLibraryPreview() {
 
 function addFromLibrary() {
   const idx = document.getElementById('librarySelect').value;
-  if (!idx) { alert('Please choose a food.'); return; }
+  if (!idx) { alert(T('alerts.chooseFood')); return; }
   const food   = FOOD_LIBRARY[parseInt(idx)];
   const amount = parseFloat(document.getElementById('libraryAmount').value) || 0;
-  if (amount <= 0) { alert('Please enter a valid amount.'); return; }
+  if (amount <= 0) { alert(T('alerts.validAmount')); return; }
   const grams  = amount * food.ug;
   const fac    = grams / 100;
   const unitStr = food.unit === 'g' ? `${grams}g` : `${amount} ${UNIT_LABELS[food.unit]||food.unit}`;
   const data = loadData();
   if (!data[currentDate]) data[currentDate] = [];
-  data[currentDate].push({ name:`${food.name} (${unitStr})`, calories:r1(food.cal*fac), protein:r1(food.p*fac), carbs:r1(food.c*fac), fat:r1(food.f*fac) });
+  data[currentDate].push({ name:`${getFoodName(food)} (${unitStr})`, calories:r1(food.cal*fac), protein:r1(food.p*fac), carbs:r1(food.c*fac), fat:r1(food.f*fac) });
   saveData(data);
   document.getElementById('librarySelect').value = '';
   document.getElementById('libraryUnitBadge').textContent = '—';
@@ -1141,12 +1384,19 @@ const CATEGORY_META = {
   'Fruits':          { emoji:'🍎', color:'#ec4899' },
   'Drinks':          { emoji:'🥤', color:'#0ea5e9' },
   'Snacks & Other':  { emoji:'🍫', color:'#a16207' },
+  'Brød & Pålegg':   { emoji:'🍞', color:'#92400e' },
+  'Middag':          { emoji:'🍝', color:'#b91c1c' },
+  'Norsk Meieri':    { emoji:'🥛', color:'#b45309' },
+  'Norsk Snacks':    { emoji:'🍫', color:'#78350f' },
+  'Norsk Drikke':    { emoji:'🥤', color:'#0369a1' },
+  'Fast Food':       { emoji:'🍔', color:'#dc2626' },
 };
 
 function initCategoryChips() {
   document.getElementById('categoryChips').innerHTML = ALL_CATEGORIES.map(c => {
     const meta = CATEGORY_META[c] || { emoji:'🍽️', color:'#7c3aed' };
-    return `<button class="chip${c==='All'?' active':''}" style="--chip-c:${meta.color}" onclick="setCategory('${c}',this)">${meta.emoji} ${esc(c)}</button>`;
+    const isActive = c === activeCategory;
+    return `<button class="chip${isActive?' active':''}" style="--chip-c:${meta.color}" onclick="setCategory('${c}',this)">${meta.emoji} ${esc(getCatLabel(c))}</button>`;
   }).join('');
 }
 
@@ -1163,19 +1413,25 @@ function filterLibrary() {
   selectedFood = null;
   let items = FOOD_LIBRARY.map((f,i) => ({...f,_i:i}));
   if (activeCategory !== 'All') items = items.filter(f => f.cat === activeCategory);
-  if (q) items = items.filter(f => f.name.toLowerCase().includes(q));
+  if (q) items = items.filter(f => {
+    const displayName = getFoodName(f).toLowerCase();
+    return displayName.includes(q) || f.name.toLowerCase().includes(q);
+  });
   window._searchItems = items;
-  renderFoodList(items, q ? `${items.length} result${items.length!==1?'s':''} in library` : activeCategory);
+  const resultLabel = q
+    ? `${items.length} ${items.length!==1?T('search.inLibPl'):T('search.inLib')}${T('search.inLibSuffix')}`
+    : getCatLabel(activeCategory);
+  renderFoodList(items, resultLabel);
 }
 
 function renderFoodList(items, label) {
-  if (!items.length) { document.getElementById('searchResults').innerHTML='<div class="empty">No foods found. Try "Search online" for more results.</div>'; return; }
+  if (!items.length) { document.getElementById('searchResults').innerHTML=`<div class="empty">${T('search.empty')}</div>`; return; }
   document.getElementById('searchResults').innerHTML =
     `<p class="results-header">${esc(label)}</p><div class="search-results">` +
     items.map((it,i) => `
       <div class="result-item" onclick="selectFood(${i})">
         <div>
-          <div class="result-name">${esc(it.name)}</div>
+          <div class="result-name">${esc(getFoodName(it))}</div>
           <div class="result-info">P: ${it.p}g · C: ${it.c}g · F: ${it.f}g per 100g</div>
         </div>
         <div class="result-cal">${it.cal} kcal/100g</div>
@@ -1185,7 +1441,7 @@ function renderFoodList(items, label) {
 async function doOnlineSearch() {
   const q = document.getElementById('searchInput').value.trim();
   if (!q) return;
-  document.getElementById('searchResults').innerHTML = '<div class="spinner">Searching online…</div>';
+  document.getElementById('searchResults').innerHTML = `<div class="spinner">${T('search.searching')}</div>`;
   document.getElementById('logPanel').style.display = 'none';
   selectedFood = null;
   try {
@@ -1202,16 +1458,16 @@ async function doOnlineSearch() {
       if (items.length>=12) break;
     }
     window._searchItems = items;
-    renderFoodList(items, `Online results for "${q}"`);
+    renderFoodList(items, `${T('search.onlineFor')} "${q}"`);
   } catch {
-    document.getElementById('searchResults').innerHTML='<div class="empty">Search failed. Check your internet connection.</div>';
+    document.getElementById('searchResults').innerHTML=`<div class="empty">${T('search.failed')}</div>`;
   }
 }
 
 function selectFood(i) {
   const it = window._searchItems[i];
   selectedFood = { name:it.name, calories_per_100g:it.cal, protein:it.p, carbs:it.c, fat:it.f };
-  document.getElementById('logPanelTitle').textContent = 'Log: ' + it.name.split(' — ')[0];
+  document.getElementById('logPanelTitle').textContent = T('search.log') + ': ' + getFoodName(it).split(' — ')[0];
   document.getElementById('logGrams').value = 100;
   updateLogPreview();
   document.getElementById('logPanel').style.display = 'block';
@@ -1237,7 +1493,7 @@ function logSelectedFood() {
   saveData(data);
   document.getElementById('logPanel').style.display='none';
   selectedFood=null;
-  alert('Logged to today!');
+  alert(T('alerts.logged'));
 }
 
 // ── History ──────────────────────────────────────────────────────
@@ -1298,7 +1554,7 @@ function logWeight() {
   const date   = document.getElementById('weightDate').value;
   const weight = parseFloat(document.getElementById('weightInput').value);
   const goalV  = parseFloat(document.getElementById('weightGoalInput').value);
-  if (!date || isNaN(weight) || weight < 20) { alert('Please enter a valid weight.'); return; }
+  if (!date || isNaN(weight) || weight < 20) { alert(T('alerts.validWeight')); return; }
   if (!isNaN(goalV) && goalV >= 20) localStorage.setItem(WGOAL_WEIGHT_KEY, String(goalV));
 
   const arr = loadWeights();
@@ -1328,7 +1584,7 @@ function renderWeightPage() {
   if (!arr.length) {
     statsEl.style.display = 'none';
     chartCard.style.display = 'none';
-    histEl.innerHTML = '<div class="empty">No entries yet. Log your first weight above.</div>';
+    histEl.innerHTML = `<div class="empty">${T('weight.empty')}</div>`;
     return;
   }
 
@@ -1362,7 +1618,7 @@ function renderWeightPage() {
     const diff    = prev !== null ? r1(w.weight - prev) : null;
     const diffHtml = diff !== null
       ? `<span class="weight-diff ${diff < 0 ? 'loss' : diff > 0 ? 'gain' : ''}">${diff > 0 ? '+' : ''}${diff} kg</span>`
-      : '<span class="weight-diff" style="color:var(--muted)">first entry</span>';
+      : `<span class="weight-diff" style="color:var(--muted)">${T('weight.first')}</span>`;
     const [y,m,d] = w.date.split('-').map(Number);
     const label = new Date(y,m-1,d).toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short',year:'numeric'});
     return `<div class="meal-item">
@@ -1423,7 +1679,7 @@ function renderWeightChart(days, btn) {
 let calYear  = new Date().getFullYear();
 let calMonth = new Date().getMonth();
 
-const CAL_DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const CAL_DAYS_EN = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
 function renderCalendar() {
   const today  = todayISO();
@@ -1433,9 +1689,10 @@ function renderCalendar() {
   const last   = new Date(calYear, calMonth + 1, 0);
 
   document.getElementById('calMonthLabel').textContent =
-    first.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+    first.toLocaleDateString(lang === 'no' ? 'nb-NO' : undefined, { month: 'long', year: 'numeric' });
 
-  let html = CAL_DAYS.map(d => `<div class="cal-header">${d}</div>`).join('');
+  const calDays = T_DATA[lang].calendar.days;
+  let html = calDays.map(d => `<div class="cal-header">${d}</div>`).join('');
 
   // Monday-first offset: Sun=0 → offset 6, Mon=1 → offset 0, etc.
   const offset = (first.getDay() + 6) % 7;
@@ -1513,9 +1770,9 @@ function importData() {
         if (d.weight_goal)  localStorage.setItem(WGOAL_WEIGHT_KEY, String(d.weight_goal));
         renderToday();
         renderWater();
-        alert('Data imported successfully!');
+        alert(T('alerts.imported'));
       } catch {
-        alert('Could not read file. Please select a valid Calorie Tracker backup.');
+        alert(T('alerts.importFailed'));
       }
     };
     reader.readAsText(file);
@@ -1525,6 +1782,8 @@ function importData() {
 
 // ── Init ─────────────────────────────────────────────────────────
 applyDark(localStorage.getItem(DARK_KEY) === '1');
+document.getElementById('langBtn').textContent = lang === 'en' ? '🇳🇴' : '🇬🇧';
+applyTranslations();
 buildLibrarySelect();
 initCategoryChips();
 filterLibrary();
