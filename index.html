@@ -1953,51 +1953,62 @@ function importData() {
       btn.textContent = '⏳ Importerer...';
       try {
         const d = JSON.parse(ev.target.result);
-        if (!uid()) throw new Error('Ikke logget inn');
 
-        // Wake up Supabase (free tier pauses after inactivity)
-        btn.textContent = '⏳ Kobler til database...';
-        const { error: pingErr } = await withTimeout(
-          sb.from('meals').select('id').limit(1),
-          15000, 'Databasen svarer ikke. Gå til supabase.com og sjekk at prosjektet ikke er pauset.'
-        );
-        if (pingErr && pingErr.message.includes('svarer ikke')) throw pingErr;
+        // Get fresh session token for direct REST calls
+        const { data: { session } } = await sb.auth.getSession();
+        if (!session) throw new Error('Ikke logget inn — logg ut og inn igjen');
+        const token = session.access_token;
+        const userId = session.user.id;
+
+        const headers = {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        };
+
+        async function restDel(table, filter) {
+          const res = await withTimeout(
+            fetch(`${SUPABASE_URL}/rest/v1/${table}?${filter}`, { method: 'DELETE', headers }),
+            15000, `${table} slett tidsavbrudd`
+          );
+          if (!res.ok) throw new Error(`${table} slett feilet: ${res.status} ${await res.text()}`);
+        }
+
+        async function restInsert(table, rows) {
+          const res = await withTimeout(
+            fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+              method: 'POST', headers: { ...headers, 'Prefer': 'return=minimal' },
+              body: JSON.stringify(rows)
+            }),
+            15000, `${table} insert tidsavbrudd`
+          );
+          if (!res.ok) throw new Error(`${table} insert feilet: ${res.status} ${await res.text()}`);
+        }
 
         if (d.meals) {
-          btn.textContent = '⏳ Sletter gammelt...';
-          const { error: delErr } = await withTimeout(
-            sb.from('meals').delete().eq('user_id', uid()).select('id'),
-            15000, 'Slett tok for lang tid — prøv igjen.'
-          );
-          if (delErr) throw new Error('Slett feilet: ' + delErr.message);
+          btn.textContent = '⏳ Sletter måltider...';
+          await restDel('meals', `user_id=eq.${userId}`);
 
           const allMeals = [];
           for (const [date, meals] of Object.entries(d.meals)) {
             meals.forEach((m, i) => allMeals.push({
-              date, user_id: uid(), name: m.name,
+              date, user_id: userId, name: m.name,
               calories: m.calories, protein: m.protein||0,
               carbs: m.carbs||0, fat: m.fat||0, sort_order: i
             }));
           }
           if (allMeals.length > 0) {
             btn.textContent = `⏳ Laster opp ${allMeals.length} måltider...`;
-            const { error: insErr } = await sb.from('meals').insert(allMeals);
-            if (insErr) throw new Error('Insert feilet: ' + insErr.message);
+            await restInsert('meals', allMeals);
           }
           DB.meals = d.meals;
         }
 
         if (d.water) {
-          const { error: delErr } = await withTimeout(
-            sb.from('water_log').delete().eq('user_id', uid()).select('id'),
-            15000, 'Vann-slett tok for lang tid — prøv igjen.'
-          );
-          if (delErr) throw new Error('Vann slett feilet: ' + delErr.message);
-          const allWater = Object.entries(d.water).map(([date, amount]) => ({ user_id: uid(), date, amount }));
-          if (allWater.length > 0) {
-            const { error: insErr } = await sb.from('water_log').insert(allWater);
-            if (insErr) throw new Error('Vann insert feilet: ' + insErr.message);
-          }
+          await restDel('water_log', `user_id=eq.${userId}`);
+          const allWater = Object.entries(d.water).map(([date, amount]) => ({ user_id: userId, date, amount }));
+          if (allWater.length > 0) await restInsert('water_log', allWater);
           DB.water = d.water;
         }
 
