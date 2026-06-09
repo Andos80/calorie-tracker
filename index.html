@@ -1966,7 +1966,7 @@ function importData() {
         if (d.meals) {
           btn.textContent = '⏳ Sletter gammelt...';
           const { error: delErr } = await withTimeout(
-            sb.from('meals').delete().eq('user_id', uid()),
+            sb.from('meals').delete().eq('user_id', uid()).select('id'),
             15000, 'Slett tok for lang tid — prøv igjen.'
           );
           if (delErr) throw new Error('Slett feilet: ' + delErr.message);
@@ -1989,7 +1989,7 @@ function importData() {
 
         if (d.water) {
           const { error: delErr } = await withTimeout(
-            sb.from('water_log').delete().eq('user_id', uid()),
+            sb.from('water_log').delete().eq('user_id', uid()).select('id'),
             15000, 'Vann-slett tok for lang tid — prøv igjen.'
           );
           if (delErr) throw new Error('Vann slett feilet: ' + delErr.message);
