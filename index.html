@@ -845,11 +845,12 @@ function toggleDark() {
 
 // ── Food library ─────────────────────────────────────────────────
 const FOOD_LIBRARY = [
+  // ── Eggs & Dairy ─────────────────────────────────────────────────
   { name:'Egg, whole',         cal:155, p:13,  c:1.1, f:11,  cat:'Eggs & Dairy',   unit:'pcs',   ug:60  },
   { name:'Egg white',          cal:52,  p:11,  c:0.7, f:0.2, cat:'Eggs & Dairy',   unit:'pcs',   ug:30  },
   { name:'Milk, whole',        cal:61,  p:3.2, c:4.8, f:3.3, cat:'Eggs & Dairy',   unit:'glass', ug:200 },
   { name:'Milk, skimmed',      cal:35,  p:3.4, c:5.0, f:0.1, cat:'Eggs & Dairy',   unit:'glass', ug:200 },
-  { name:'Cheddar cheese',     cal:403, p:25,  c:1.3, f:33,  cat:'Eggs & Dairy',   unit:'g',     ug:1   },
+  { name:'Cheddar cheese',     cal:403, p:25,  c:1.3, f:33,  cat:'Eggs & Dairy',   unit:'slice', ug:25  },
   { name:'Mozzarella',         cal:280, p:22,  c:2.2, f:17,  cat:'Eggs & Dairy',   unit:'g',     ug:1   },
   { name:'Cottage cheese',     cal:98,  p:11,  c:3.4, f:4.3, cat:'Eggs & Dairy',   unit:'g',     ug:1   },
   { name:'Cream cheese',       cal:342, p:6.0, c:4.1, f:34,  cat:'Eggs & Dairy',   unit:'tbsp',  ug:15  },
@@ -857,6 +858,7 @@ const FOOD_LIBRARY = [
   { name:'Natural yogurt',     cal:61,  p:3.5, c:4.7, f:3.3, cat:'Eggs & Dairy',   unit:'g',     ug:1   },
   { name:'Butter',             cal:717, p:0.9, c:0.1, f:81,  cat:'Eggs & Dairy',   unit:'tbsp',  ug:14  },
   { name:'Sour cream',         cal:193, p:2.1, c:4.6, f:19,  cat:'Eggs & Dairy',   unit:'tbsp',  ug:15  },
+  // ── Meat & Fish ──────────────────────────────────────────────────
   { name:'Chicken breast',     cal:165, p:31,  c:0,   f:3.6, cat:'Meat & Fish',    unit:'g',     ug:1   },
   { name:'Chicken thigh',      cal:209, p:26,  c:0,   f:11,  cat:'Meat & Fish',    unit:'g',     ug:1   },
   { name:'Turkey breast',      cal:135, p:30,  c:0,   f:1.0, cat:'Meat & Fish',    unit:'g',     ug:1   },
@@ -872,7 +874,7 @@ const FOOD_LIBRARY = [
   { name:'Cod',                cal:82,  p:18,  c:0,   f:0.7, cat:'Meat & Fish',    unit:'g',     ug:1   },
   { name:'Shrimp',             cal:99,  p:24,  c:0.2, f:0.3, cat:'Meat & Fish',    unit:'g',     ug:1   },
   { name:'Mackerel',           cal:205, p:19,  c:0,   f:14,  cat:'Meat & Fish',    unit:'g',     ug:1   },
-  { name:'Hákarl (fermented shark)', cal:130, p:29, c:0, f:2.0, cat:'Meat & Fish', unit:'g',   ug:1   },
+  // ── Bread & Grains ───────────────────────────────────────────────
   { name:'White bread',        cal:265, p:9.0, c:49,  f:3.2, cat:'Bread & Grains', unit:'slice', ug:35  },
   { name:'Whole wheat bread',  cal:247, p:13,  c:41,  f:4.2, cat:'Bread & Grains', unit:'slice', ug:35  },
   { name:'Bagel',              cal:257, p:10,  c:50,  f:1.6, cat:'Bread & Grains', unit:'pcs',   ug:100 },
@@ -884,6 +886,7 @@ const FOOD_LIBRARY = [
   { name:'Cornflakes',         cal:357, p:8.0, c:79,  f:0.9, cat:'Bread & Grains', unit:'g',     ug:1   },
   { name:'Potato (boiled)',    cal:87,  p:1.9, c:20,  f:0.1, cat:'Bread & Grains', unit:'g',     ug:1   },
   { name:'French fries',       cal:312, p:3.4, c:41,  f:15,  cat:'Bread & Grains', unit:'g',     ug:1   },
+  // ── Vegetables ───────────────────────────────────────────────────
   { name:'Avocado',            cal:160, p:2.0, c:9.0, f:15,  cat:'Vegetables',     unit:'pcs',   ug:150 },
   { name:'Broccoli',           cal:34,  p:2.8, c:7.0, f:0.4, cat:'Vegetables',     unit:'g',     ug:1   },
   { name:'Carrot',             cal:41,  p:0.9, c:10,  f:0.2, cat:'Vegetables',     unit:'pcs',   ug:80  },
@@ -896,6 +899,7 @@ const FOOD_LIBRARY = [
   { name:'Bell pepper',        cal:31,  p:1.0, c:6.0, f:0.3, cat:'Vegetables',     unit:'pcs',   ug:120 },
   { name:'Corn (cooked)',      cal:96,  p:3.4, c:21,  f:1.5, cat:'Vegetables',     unit:'g',     ug:1   },
   { name:'Mushrooms',          cal:22,  p:3.1, c:3.3, f:0.3, cat:'Vegetables',     unit:'g',     ug:1   },
+  // ── Fruits ───────────────────────────────────────────────────────
   { name:'Apple',              cal:52,  p:0.3, c:14,  f:0.2, cat:'Fruits',         unit:'pcs',   ug:180 },
   { name:'Banana',             cal:89,  p:1.1, c:23,  f:0.3, cat:'Fruits',         unit:'pcs',   ug:120 },
   { name:'Orange',             cal:47,  p:0.9, c:12,  f:0.1, cat:'Fruits',         unit:'pcs',   ug:150 },
@@ -905,21 +909,19 @@ const FOOD_LIBRARY = [
   { name:'Blueberry',          cal:57,  p:0.7, c:14,  f:0.3, cat:'Fruits',         unit:'g',     ug:1   },
   { name:'Watermelon',         cal:30,  p:0.6, c:7.6, f:0.2, cat:'Fruits',         unit:'g',     ug:1   },
   { name:'Pineapple',          cal:50,  p:0.5, c:13,  f:0.1, cat:'Fruits',         unit:'g',     ug:1   },
-  // Drinks — ug = ml per unit (density ≈ 1 g/ml for all drinks here)
+  // ── Drinks ───────────────────────────────────────────────────────
   { name:'Water',              cal:0,   p:0,   c:0,   f:0,   cat:'Drinks',         unit:'glass', ug:250 },
   { name:'Orange juice',       cal:45,  p:0.7, c:10,  f:0.2, cat:'Drinks',         unit:'glass', ug:200 },
   { name:'Apple juice',        cal:46,  p:0.1, c:11,  f:0.1, cat:'Drinks',         unit:'glass', ug:200 },
   { name:'Coca-Cola',          cal:42,  p:0,   c:11,  f:0,   cat:'Drinks',         unit:'glass', ug:200 },
-  { name:'Whole milk',         cal:61,  p:3.2, c:4.8, f:3.3, cat:'Drinks',         unit:'glass', ug:200 },
-  { name:'Skimmed milk',       cal:35,  p:3.4, c:5.0, f:0.1, cat:'Drinks',         unit:'glass', ug:200 },
   { name:'Coffee (black)',     cal:2,   p:0.3, c:0,   f:0,   cat:'Drinks',         unit:'cup',   ug:240 },
   { name:'Coffee w/ milk',     cal:19,  p:0.9, c:1.9, f:0.9, cat:'Drinks',         unit:'cup',   ug:240 },
   { name:'Smoothie (fruit)',   cal:60,  p:0.7, c:14,  f:0.3, cat:'Drinks',         unit:'glass', ug:250 },
-  { name:'Beer (lager)',        cal:43,  p:0.5, c:3.5, f:0,   cat:'Drinks',         unit:'cl',    ug:10  },
-  { name:'Beer (strong/IPA)',  cal:65,  p:0.6, c:5.5, f:0,   cat:'Drinks',         unit:'cl',    ug:10  },
+  { name:'Beer (lager)',       cal:43,  p:0.5, c:3.5, f:0,   cat:'Drinks',         unit:'cl',    ug:10  },
+  { name:'Beer (strong/IPA)', cal:65,  p:0.6, c:5.5, f:0,   cat:'Drinks',         unit:'cl',    ug:10  },
   { name:'Wine (red)',         cal:85,  p:0.1, c:2.6, f:0,   cat:'Drinks',         unit:'cl',    ug:10  },
   { name:'Wine (white)',       cal:82,  p:0.1, c:2.6, f:0,   cat:'Drinks',         unit:'cl',    ug:10  },
-  { name:'Wine (rosé)',        cal:83,  p:0.1, c:2.6, f:0,   cat:'Drinks',         unit:'cl',    ug:10  },
+  // ── Snacks & Other ───────────────────────────────────────────────
   { name:'Peanuts',            cal:567, p:26,  c:16,  f:49,  cat:'Snacks & Other', unit:'g',     ug:1   },
   { name:'Peanut butter',      cal:588, p:25,  c:20,  f:50,  cat:'Snacks & Other', unit:'tbsp',  ug:16  },
   { name:'Ice cream (vanilla)',cal:207, p:3.5, c:24,  f:11,  cat:'Snacks & Other', unit:'scoop', ug:65  },
@@ -932,8 +934,7 @@ const FOOD_LIBRARY = [
   { name:'Ketchup',            cal:112, p:1.4, c:27,  f:0.1, cat:'Snacks & Other', unit:'tbsp',  ug:17  },
   { name:'Mayonnaise',         cal:680, p:1.0, c:0.6, f:75,  cat:'Snacks & Other', unit:'tbsp',  ug:14  },
   { name:'Hummus',             cal:166, p:8.0, c:14,  f:10,  cat:'Snacks & Other', unit:'tbsp',  ug:30  },
-  // ── Norske matvarer ──────────────────────────────────────────────
-  // Brød & Pålegg
+  // ── Brød & Pålegg ────────────────────────────────────────────────
   { name:'Grovbrød',           cal:220, p:9.0, c:39,  f:3.0, cat:'Brød & Pålegg',  unit:'slice', ug:35  },
   { name:'Loff',               cal:265, p:8.0, c:53,  f:2.5, cat:'Brød & Pålegg',  unit:'slice', ug:30  },
   { name:'Knekkebrød',         cal:360, p:11,  c:65,  f:5.0, cat:'Brød & Pålegg',  unit:'pcs',   ug:10  },
@@ -946,10 +947,11 @@ const FOOD_LIBRARY = [
   { name:'Leverpostei',        cal:237, p:10,  c:6.0, f:20,  cat:'Brød & Pålegg',  unit:'tbsp',  ug:20  },
   { name:'Nugatti',            cal:547, p:6.4, c:57,  f:31,  cat:'Brød & Pålegg',  unit:'tbsp',  ug:15  },
   { name:'Syltetøy',           cal:250, p:0.5, c:62,  f:0.1, cat:'Brød & Pålegg',  unit:'tbsp',  ug:15  },
-  // Middag
-  { name:'Kokt pasta',         cal:158, p:5.8, c:31,  f:0.9, cat:'Middag',          unit:'g',     ug:1   },
-  { name:'Ris (kokt)',         cal:130, p:2.7, c:28,  f:0.3, cat:'Middag',          unit:'g',     ug:1   },
-  { name:'Poteter (kokt)',     cal:87,  p:1.9, c:20,  f:0.1, cat:'Middag',          unit:'g',     ug:1   },
+  { name:'Makrell i tomat',    cal:170, p:17,  c:2.0, f:11,  cat:'Brød & Pålegg',  unit:'g',     ug:1   },
+  { name:'Kaviar (tube)',      cal:156, p:12,  c:14,  f:6.0, cat:'Brød & Pålegg',  unit:'tbsp',  ug:15  },
+  { name:'Prim',               cal:272, p:9.5, c:46,  f:5.5, cat:'Brød & Pålegg',  unit:'slice', ug:15  },
+  { name:'Reker (til brød)',   cal:99,  p:24,  c:0.2, f:0.3, cat:'Brød & Pålegg',  unit:'g',     ug:1   },
+  // ── Middag ───────────────────────────────────────────────────────
   { name:'Kyllingfilet',       cal:165, p:31,  c:0,   f:3.6, cat:'Middag',          unit:'g',     ug:1   },
   { name:'Kjøttdeig',         cal:215, p:21,  c:0,   f:14,  cat:'Middag',          unit:'g',     ug:1   },
   { name:'Laks',               cal:208, p:20,  c:0,   f:13,  cat:'Middag',          unit:'g',     ug:1   },
@@ -958,40 +960,58 @@ const FOOD_LIBRARY = [
   { name:'Taco (kjøtt)',      cal:240, p:18,  c:8.0, f:16,  cat:'Middag',          unit:'g',     ug:1   },
   { name:'Pølse i brød',      cal:265, p:10,  c:28,  f:13,  cat:'Middag',          unit:'pcs',   ug:115 },
   { name:'Burger',             cal:295, p:17,  c:23,  f:15,  cat:'Middag',          unit:'pcs',   ug:200 },
-  // Norsk Meieri
+  { name:'Kjøttkaker',        cal:220, p:16,  c:8.0, f:14,  cat:'Middag',          unit:'pcs',   ug:60  },
+  { name:'Fårikål',           cal:130, p:15,  c:3.0, f:7.0, cat:'Middag',          unit:'g',     ug:1   },
+  { name:'Lammekjøtt',        cal:258, p:25,  c:0,   f:17,  cat:'Middag',          unit:'g',     ug:1   },
+  { name:'Svinekoteletter',    cal:231, p:28,  c:0,   f:13,  cat:'Middag',          unit:'g',     ug:1   },
+  { name:'Torsk (filet)',      cal:82,  p:18,  c:0,   f:0.7, cat:'Middag',          unit:'g',     ug:1   },
+  { name:'Spaghetti bolognese',cal:150, p:9.0, c:16,  f:6.0, cat:'Middag',          unit:'g',     ug:1   },
+  { name:'Grønnsaksuppe',     cal:45,  p:2.5, c:8.0, f:0.5, cat:'Middag',          unit:'g',     ug:1   },
+  // ── Bakevarer ────────────────────────────────────────────────────
+  { name:'Havregrøt',         cal:70,  p:2.5, c:12,  f:1.5, cat:'Bakevarer',       unit:'g',     ug:1   },
+  { name:'Müsli',              cal:370, p:10,  c:64,  f:8.0, cat:'Bakevarer',       unit:'g',     ug:1   },
+  { name:'Bolle',              cal:290, p:7.0, c:50,  f:7.0, cat:'Bakevarer',       unit:'pcs',   ug:80  },
+  { name:'Skolebolle',         cal:320, p:6.0, c:50,  f:11,  cat:'Bakevarer',       unit:'pcs',   ug:90  },
+  { name:'Kanelsnurr',         cal:335, p:6.0, c:51,  f:12,  cat:'Bakevarer',       unit:'pcs',   ug:90  },
+  { name:'Lefse',              cal:270, p:5.0, c:52,  f:5.0, cat:'Bakevarer',       unit:'pcs',   ug:60  },
+  { name:'Vaffel',             cal:310, p:7.0, c:42,  f:13,  cat:'Bakevarer',       unit:'pcs',   ug:80  },
+  { name:'Pannekake',          cal:197, p:7.0, c:26,  f:8.0, cat:'Bakevarer',       unit:'pcs',   ug:80  },
+  // ── Norsk Meieri ──────────────────────────────────────────────────
   { name:'Lettmelk',           cal:42,  p:3.5, c:4.8, f:1.5, cat:'Norsk Meieri',    unit:'glass', ug:200 },
-  { name:'Helmelk',            cal:61,  p:3.2, c:4.8, f:3.3, cat:'Norsk Meieri',    unit:'glass', ug:200 },
-  { name:'Yoghurt naturell',   cal:61,  p:3.5, c:4.7, f:3.3, cat:'Norsk Meieri',    unit:'g',     ug:1   },
   { name:'Yoghurt med smak',   cal:80,  p:3.5, c:13,  f:1.5, cat:'Norsk Meieri',    unit:'g',     ug:1   },
   { name:'Skyr',               cal:57,  p:11,  c:3.5, f:0.2, cat:'Norsk Meieri',    unit:'g',     ug:1   },
   { name:'Fløte',             cal:331, p:2.3, c:3.0, f:35,  cat:'Norsk Meieri',    unit:'tbsp',  ug:15  },
-  { name:'Iskrem',             cal:207, p:3.5, c:24,  f:11,  cat:'Norsk Meieri',    unit:'scoop', ug:65  },
-  // Norsk Snacks
-  { name:'Potetchips',         cal:536, p:7.0, c:53,  f:35,  cat:'Norsk Snacks',    unit:'g',     ug:1   },
+  { name:'Rømme',              cal:193, p:2.1, c:4.6, f:19,  cat:'Norsk Meieri',    unit:'tbsp',  ug:15  },
+  // ── Norsk Snacks ──────────────────────────────────────────────────
   { name:'Sørlandschips',     cal:524, p:6.5, c:55,  f:33,  cat:'Norsk Snacks',    unit:'g',     ug:1   },
   { name:'Tortillachips',      cal:482, p:7.0, c:63,  f:23,  cat:'Norsk Snacks',    unit:'g',     ug:1   },
   { name:'Gelégodteri',       cal:328, p:5.0, c:76,  f:0.5, cat:'Norsk Snacks',    unit:'g',     ug:1   },
-  { name:'Sjokoladebiter',     cal:530, p:6.0, c:60,  f:30,  cat:'Norsk Snacks',    unit:'g',     ug:1   },
   { name:'Lakris',             cal:314, p:5.0, c:76,  f:0.3, cat:'Norsk Snacks',    unit:'g',     ug:1   },
   { name:'Skumgodteri',        cal:336, p:4.0, c:78,  f:0,   cat:'Norsk Snacks',    unit:'g',     ug:1   },
   { name:'Smågodt mix',       cal:340, p:3.5, c:73,  f:3.0, cat:'Norsk Snacks',    unit:'g',     ug:1   },
-  { name:'Melkesjokolade',     cal:535, p:8.0, c:59,  f:30,  cat:'Norsk Snacks',    unit:'g',     ug:1   },
   { name:'Kvikk Lunsj',        cal:492, p:7.5, c:60,  f:24,  cat:'Norsk Snacks',    unit:'pcs',   ug:47  },
   { name:'Snickers',           cal:488, p:7.5, c:60,  f:25,  cat:'Norsk Snacks',    unit:'pcs',   ug:50  },
   { name:'Smash',              cal:510, p:6.0, c:60,  f:27,  cat:'Norsk Snacks',    unit:'pcs',   ug:45  },
   { name:'Kinderegg',          cal:528, p:7.0, c:58,  f:29,  cat:'Norsk Snacks',    unit:'pcs',   ug:20  },
-  // Norsk Drikke
+  { name:'Twist',              cal:448, p:4.0, c:58,  f:23,  cat:'Norsk Snacks',    unit:'g',     ug:1   },
+  { name:'Daim',               cal:486, p:4.0, c:59,  f:27,  cat:'Norsk Snacks',    unit:'pcs',   ug:28  },
+  { name:'Stratos',            cal:500, p:7.0, c:57,  f:27,  cat:'Norsk Snacks',    unit:'pcs',   ug:35  },
+  { name:'Freia sjokolade',    cal:535, p:8.0, c:59,  f:30,  cat:'Norsk Snacks',    unit:'g',     ug:1   },
+  // ── Norsk Drikke ──────────────────────────────────────────────────
   { name:'Cola',               cal:42,  p:0,   c:11,  f:0,   cat:'Norsk Drikke',    unit:'glass', ug:250 },
   { name:'Cola Zero',          cal:1,   p:0,   c:0.1, f:0,   cat:'Norsk Drikke',    unit:'glass', ug:250 },
-  { name:'Appelsinjuice',      cal:45,  p:0.7, c:10,  f:0.2, cat:'Norsk Drikke',    unit:'glass', ug:200 },
   { name:'Energidrikk',        cal:45,  p:0,   c:11,  f:0,   cat:'Norsk Drikke',    unit:'glass', ug:250 },
-  { name:'Øl',                cal:43,  p:0.5, c:3.5, f:0,   cat:'Norsk Drikke',    unit:'cl',    ug:10  },
   { name:'Vin',                cal:85,  p:0.1, c:2.6, f:0,   cat:'Norsk Drikke',    unit:'cl',    ug:10  },
-  // Fast Food
+  { name:'Saft',               cal:40,  p:0,   c:10,  f:0,   cat:'Norsk Drikke',    unit:'glass', ug:200 },
+  { name:'Solo',               cal:48,  p:0,   c:12,  f:0,   cat:'Norsk Drikke',    unit:'glass', ug:250 },
+  { name:'Litago',             cal:55,  p:3.2, c:7.5, f:1.3, cat:'Norsk Drikke',    unit:'glass', ug:200 },
+  // ── Fast Food ─────────────────────────────────────────────────────
   { name:'Big Mac',            cal:257, p:13,  c:24,  f:12,  cat:'Fast Food',        unit:'pcs',   ug:215 },
-  { name:'Pommes frites',      cal:312, p:3.4, c:41,  f:15,  cat:'Fast Food',        unit:'g',     ug:1   },
   { name:'Pizza takeaway',     cal:260, p:11,  c:30,  f:11,  cat:'Fast Food',        unit:'g',     ug:1   },
   { name:'Kebab',              cal:240, p:15,  c:20,  f:11,  cat:'Fast Food',        unit:'pcs',   ug:300 },
+  { name:'Nuggets (6 stk)',    cal:289, p:18,  c:17,  f:17,  cat:'Fast Food',        unit:'pcs',   ug:100 },
+  { name:'McFlurry',           cal:215, p:4.0, c:34,  f:7.5, cat:'Fast Food',        unit:'pcs',   ug:200 },
+  { name:'Wrap',               cal:240, p:12,  c:27,  f:10,  cat:'Fast Food',        unit:'pcs',   ug:200 },
 ];
 
 const UNIT_LABELS    = { g:'g', pcs:'pcs', glass:'glass', slice:'slice', tbsp:'tbsp', cup:'cup', cl:'cl', scoop:'scoop' };
@@ -1015,6 +1035,7 @@ const CAT_LABELS = {
   'Norsk Meieri':   { en:'Norwegian Dairy',      no:'Meieri' },
   'Norsk Snacks':   { en:'Norwegian Snacks',     no:'Snacks' },
   'Norsk Drikke':   { en:'Norwegian Drinks',     no:'Norsk Drikke' },
+  'Bakevarer':      { en:'Bakery & Breakfast',   no:'Bakevarer' },
   'Fast Food':      { en:'Fast Food',            no:'Fast Food' },
 };
 
@@ -1389,6 +1410,7 @@ const CATEGORY_META = {
   'Norsk Meieri':    { emoji:'🥛', color:'#b45309' },
   'Norsk Snacks':    { emoji:'🍫', color:'#78350f' },
   'Norsk Drikke':    { emoji:'🥤', color:'#0369a1' },
+  'Bakevarer':       { emoji:'🥐', color:'#b45309' },
   'Fast Food':       { emoji:'🍔', color:'#dc2626' },
 };
 
