@@ -1,6 +1,6 @@
 # 🥗 Calorie Tracker
 
-A free, privacy-first calorie and weight tracking web app. No account, no install, no ads — just open the link and start logging.
+En gratis kalori- og vekttracker for flere brukere. Registrer deg, logg inn og start tracking — fungerer på alle enheter.
 
 **Live app → [andos80.github.io/calorie-tracker](https://andos80.github.io/calorie-tracker/)**
 
@@ -8,136 +8,128 @@ A free, privacy-first calorie and weight tracking web app. No account, no instal
 
 ---
 
-## Install on your phone
+## Installer på telefonen
 
-The app can be added to your home screen and works like a native app — no App Store required.
+Appen kan legges til på hjemskjermen og fungerer som en native app — ingen App Store nødvendig.
 
 ### iPhone / iPad (Safari)
-1. Open **[andos80.github.io/calorie-tracker](https://andos80.github.io/calorie-tracker/)** in **Safari**
-2. Tap the **Share** button (the box with an arrow at the bottom of the screen)
-3. Scroll down and tap **"Add to Home Screen"**
-4. Tap **Add** — the app icon appears on your home screen
+1. Åpne **[andos80.github.io/calorie-tracker](https://andos80.github.io/calorie-tracker/)** i **Safari**
+2. Trykk på **Del**-knappen (boksen med pil nederst på skjermen)
+3. Scroll ned og trykk **"Legg til på hjemskjerm"**
+4. Trykk **Legg til** — app-ikonet vises på hjemskjermen
 
 ### Android (Chrome)
-1. Open the link in **Chrome**
-2. Tap the **⋮** menu (top right)
-3. Tap **"Add to Home screen"**
-4. Tap **Add** — done
-
-Once installed it launches fullscreen without the browser bar, just like a native app.
+1. Åpne lenken i **Chrome**
+2. Trykk på **⋮**-menyen (øverst til høyre)
+3. Trykk **"Legg til på startskjermen"**
+4. Trykk **Legg til** — ferdig
 
 ---
 
-## Features
+## Funksjoner
 
-### 📅 Today
-- Set your daily calorie goal and track progress with a gradient progress bar
-- Log meals from the built-in food library using a dropdown with **75+ common foods**
-- Smart units per food type — eggs in pcs, milk in glasses, bread in slices, beer in cl, etc.
-- Color-coded macro breakdown — 🟣 Protein · 🟠 Carbs · 🟡 Fat
-- Add any meal manually with full macro values
-- Navigate to any past or future date with the arrow buttons
-- Export and import your personal data as a `.json` backup file
+### 👤 Innlogging
+- Registrer deg med e-post og passord
+- Hver bruker har sin helt egen data — ingen ser andres innlegg
+- Dataene er tilgjengelige på alle enheter du logger inn fra
+- Logg ut med 🚪-knappen i headeren
 
-### 💧 Water Tracker
-- Quick-add buttons: **+1 glass**, **+33 cl**, **+50 cl**, or enter any custom amount
-- Visual progress bar and animated water drop icons
-- Daily goal of 2000 ml, resets automatically each day
+### 📅 I dag
+- Sett daglig kalori-mål og følg fremgang med en progressbar
+- Logg måltider fra det innebygde matbiblioteket med **150+ matvarer**
+- Smarte enheter per matvare — egg i stk, melk i glass, brød i skiver, øl i cl osv.
+- Fargekodet makrofordeling — 🟣 Protein · 🟠 Karbohydrater · 🟡 Fett
+- Legg til hva som helst manuelt med fulle makroverdier
+- Naviger til hvilken som helst dato med pilknappene
+- Eksporter og importer dine data som `.json`-backup
 
-### 🔍 Search Food
-- Browse the built-in library by category with emoji filter chips
-- Real-time search filters the library as you type
-- **Search online** via [Open Food Facts](https://world.openfoodfacts.org/) for anything not in the library
-- Select a result → enter grams → log it to today in one tap
+### 💧 Vanntracker
+- Hurtigtillegg-knapper: **+1 glass**, **+33 cl**, **+50 cl**, eller skriv inn egendefinert mengde
+- Visuell progressbar og animerte vanndråpe-ikoner
+- Daglig mål på 2000 ml, nullstilles automatisk hver dag
 
-### 📆 Calendar
-- Full monthly calendar showing calories logged for every day
-- 🟢 Green = under goal · 🔴 Red = over goal · Outlined cell = today
-- Navigate between months with the arrow buttons
-- Tap any day to jump straight to logging for that date
+### 🔍 Søk mat
+- Bla i matbiblioteket etter kategori med emoji-filterbrikker
+- Sanntidssøk filtrerer biblioteket mens du skriver
+- Søk på norsk (f.eks. "kylling" finner "Chicken breast")
+- **Søk online** via [Open Food Facts](https://world.openfoodfacts.org/) for alt som ikke er i biblioteket
 
-### ⚖️ Weight
-- Log your weight as often as you like (recommended: once a week)
-- Set an optional goal weight to track progress towards
-- Stats summary: starting weight · current weight · total change · goal
-- Smooth line chart with **1M / 3M / 6M / All time** period views
-- Full history list showing the change since each previous entry
+### 📆 Kalender
+- Full månedsoversikt med kalorier logget for hver dag
+- 🟢 Grønn = under mål · 🔴 Rød = over mål
+- Naviger mellom måneder med pilknappene
+- Trykk på en dag for å hoppe til logging for den datoen
 
-### 📊 History
-- Bar chart of daily calorie totals for the last **7, 14 or 30 days**
-- Bars turn red on days you went over goal
-- Dashed goal line for easy visual reference
+### ⚖️ Vekt
+- Logg vekten din så ofte du vil
+- Sett et vektmål for å spore fremgang
+- Statistikk: startvekt · nåværende vekt · total endring · mål
+- Linjediagram med **1M / 3M / 6M / Alt** periodevisning
 
-### 🌙 Dark Mode
-- Toggle between light and dark with the button in the top corner
-- Deep indigo dark theme, easy on the eyes
-- Preference is saved and restored automatically
+### 📊 Historikk
+- Søylediagram med daglige kaloritotaler for de siste **7, 14 eller 30 dagene**
+- Søyler blir røde på dager du gikk over målet
+- Stiplet mållinje for enkel visuell referanse
 
----
+### 🌍 Norsk / Engelsk
+- Bytt språk med flagg-knappen i headeren
+- Matvarer og kategorier oversettes automatisk
 
-## Food Library
-
-**75+ everyday foods** across 7 categories with accurate calorie and macro data. Units are set automatically per food:
-
-| Unit | Examples |
-|------|---------|
-| **pcs** | Egg, sausage, bagel, tortilla, apple, banana, orange, avocado, carrot, tomato |
-| **glass** | Milk, orange juice, apple juice, Coca-Cola, smoothie |
-| **cl** | Beer (lager), Beer (strong/IPA), Wine (red/white/rosé) |
-| **slice** | White bread, whole wheat bread, ham, bacon |
-| **tbsp** | Butter, cream cheese, peanut butter, olive oil, ketchup, mayo, hummus |
-| **cup** | Coffee (black), coffee with milk |
-| **scoop** | Ice cream |
-| **g** | Chicken, beef, fish, salmon, tuna, rice, pasta, oats, cheese, all vegetables |
-
-### Categories
-🥚 Eggs & Dairy · 🥩 Meat & Fish · 🍞 Bread & Grains · 🥦 Vegetables · 🍎 Fruits · 🥤 Drinks · 🍫 Snacks & Other
+### 🌙 Mørk modus
+- Bytt mellom lys og mørk med knappen i hjørnet
+- Preferanse lagres automatisk
 
 ---
 
-## Saving Your Data
+## Matbibliotek
 
-All data is stored in your browser's **local storage** — nothing is ever sent to a server.
+**150+ matvarer** fordelt på 14 kategorier med nøyaktige kalori- og makroverdier.
 
-**To back up or move your data to another device:**
-1. Go to the **Today** tab and scroll down to the **Your data** card
-2. Tap **⬇ Export** — downloads a `calorie-tracker-YYYY-MM-DD.json` file
-3. On any browser or device, tap **⬆ Import** and select your file to restore everything instantly
-
-The backup includes all meals, water intake, weight entries, your calorie goal and water goal.
-Each person keeps their own file — this is how multiple people can use the same app independently.
-
----
-
-## How to Use
-
-1. Open **[andos80.github.io/calorie-tracker](https://andos80.github.io/calorie-tracker/)** in any browser (or install it — see above)
-2. On the **Today** tab, set your daily calorie goal and tap **Save**
-3. Log meals using the **Add from library** dropdown, or fill in the manual form below it
-4. Log water intake in the **💧 Water intake** section
-5. Switch to **Weight** to start tracking your weekly weigh-ins
-6. Use **Calendar** for a monthly overview — tap any day to edit it
-7. Check **History** to see your calorie trend over time
-8. Tap **⬇ Export** regularly to keep a personal backup
+| Kategori | Eksempler |
+|----------|-----------|
+| 🥚 Eggs & Dairy | Egg, melk, ost, yoghurt, smør |
+| 🥩 Meat & Fish | Kylling, laks, biff, tunfisk, reker |
+| 🍞 Bread & Grains | Brød, ris, pasta, havre, poteter |
+| 🥦 Vegetables | Brokkoli, gulrot, tomat, spinat, paprika |
+| 🍎 Fruits | Eple, banan, jordbær, mango, blåbær |
+| 🥤 Drinks | Vann, juice, kaffe, øl, vin |
+| 🍫 Snacks & Other | Nøtter, sjokolade, chips, olivenolje |
+| 🍞 Brød & Pålegg | Grovbrød, brunost, skinke, leverpostei, kaviar |
+| 🍝 Middag | Kyllingfilet, laks, kjøttkaker, fårikål, grandiosa |
+| 🥐 Bakevarer | Havregrøt, bolle, vaffel, pannekake, kanelsnurr |
+| 🥛 Meieri | Lettmelk, skyr, rømme, fløte |
+| 🍫 Snacks | Kvikk Lunsj, Smash, Daim, Twist, smågodt |
+| 🥤 Norsk Drikke | Cola, Solo, Saft, Litago, Energidrikk |
+| 🍔 Fast Food | Big Mac, kebab, pizza, nuggets, McFlurry |
 
 ---
 
-## Design & Compatibility
+## Skylagring
 
-- Playful, modern design with a green–teal gradient and color-coded nutrition info
-- Full **dark mode** support
-- Tested and optimised for **mobile** (iPhone/Android) and desktop
-- Installable as a **PWA** — works like a native app with its own icon
-- Works in any modern browser — Chrome, Safari, Firefox, Edge
+All data lagres i **Supabase** og er koblet til din brukerkonto. Du kan logge inn fra hvilken som helst enhet og se din data.
+
+**Backup og gjenoppretting:**
+1. Gå til **I dag**-fanen og scroll ned til **Your data**-kortet
+2. Trykk **⬇ Export** — laster ned en `calorie-tracker-YYYY-MM-DD.json`-fil
+3. Trykk **⬆ Import** og velg filen for å gjenopprette alt
 
 ---
 
-## Tech
+## Kom i gang
 
-- Single HTML file — no framework, no build step, no dependencies to install
-- Data stored in `localStorage` as JSON (no server, no account)
-- Installable as a PWA via `manifest.json` and Apple meta tags
-- Food search powered by [Open Food Facts](https://world.openfoodfacts.org/) (open-source food database)
-- Charts rendered by [Chart.js](https://www.chartjs.org/)
-- Fonts from [Google Fonts](https://fonts.google.com/) (Inter)
-- Hosted for free on [GitHub Pages](https://pages.github.com/)
+1. Åpne **[andos80.github.io/calorie-tracker](https://andos80.github.io/calorie-tracker/)**
+2. Registrer deg med e-post og passord
+3. Bekreft e-posten din (sjekk innboksen)
+4. Sett ditt daglige kalori-mål og start logging
+
+---
+
+## Teknologi
+
+- Én HTML-fil — ingen rammeverk, ingen byggesteg
+- Brukerdata lagret i [Supabase](https://supabase.com/) med Row Level Security per bruker
+- Innlogging via Supabase Auth (e-post/passord)
+- Installbar som PWA via `manifest.json`
+- Matsøk via [Open Food Facts](https://world.openfoodfacts.org/)
+- Grafer med [Chart.js](https://www.chartjs.org/)
+- Hostet gratis på [GitHub Pages](https://pages.github.com/)
