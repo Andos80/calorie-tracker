@@ -546,6 +546,33 @@
     .weight-stats { grid-template-columns: repeat(2,1fr); }
   }
 
+/* ── Progress forecast ──────────────────────────────────────────── */
+  .forecast-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 1rem;
+  }
+  @media (min-width: 480px) { .forecast-grid { grid-template-columns: repeat(4, 1fr); } }
+  .forecast-stat {
+    background: var(--surface2); border-radius: var(--radius-sm); padding: 0.9rem 0.75rem; text-align: center;
+  }
+  .forecast-stat span {
+    display: block; font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.05em; color: var(--muted); margin-bottom: 0.4rem;
+  }
+  .forecast-stat strong { font-size: 1.1rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .forecast-stat strong.loss { color: var(--accent-text); }
+  .forecast-stat strong.gain { color: var(--danger); }
+  .forecast-bar-labels {
+    display: flex; justify-content: space-between; font-size: 0.73rem;
+    color: var(--muted); margin-bottom: 0.35rem; font-weight: 600;
+  }
+  .forecast-bar-labels .fc-current {
+    position: absolute; left: 50%; transform: translateX(-50%); white-space: nowrap;
+  }
+  .forecast-bar-wrap { position: relative; }
+  .forecast-note {
+    font-size: 0.8rem; color: var(--muted); text-align: center; margin-top: 0.75rem; font-style: italic;
+  }
+
 /* ── Auth screen ──────────────────────────────────────────────── */
 #authScreen {
   position:fixed;inset:0;background:var(--bg);
@@ -796,6 +823,40 @@
       </div>
     </div>
     <canvas id="weightChart"></canvas>
+  </div>
+
+  <!-- Progress forecast card -->
+  <div class="chart-card" id="progressForecast" style="display:none;margin-bottom:1rem">
+    <h3 style="font-size:.95rem;font-weight:600;margin-bottom:1rem" id="forecastTitle">Expected progress</h3>
+    <div class="forecast-grid">
+      <div class="forecast-stat">
+        <span id="forecastDeficitLbl">Avg. deficit/day</span>
+        <strong id="forecastDeficit">—</strong>
+      </div>
+      <div class="forecast-stat">
+        <span id="forecastWeekLbl">Expected/week</span>
+        <strong id="forecastPerWeek">—</strong>
+      </div>
+      <div class="forecast-stat">
+        <span id="forecastToGoLbl">Remaining</span>
+        <strong id="forecastToGo">—</strong>
+      </div>
+      <div class="forecast-stat">
+        <span id="forecastDateLbl">Est. goal date</span>
+        <strong id="forecastDate">—</strong>
+      </div>
+    </div>
+    <div id="forecastProgressWrap" style="display:none">
+      <div class="forecast-bar-labels">
+        <span id="forecastStartLabel">—</span>
+        <span id="forecastCurrentLabel" style="position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap">—</span>
+        <span id="forecastGoalLabel">—</span>
+      </div>
+      <div style="position:relative;margin-top:0.5rem">
+        <div class="progress-bar"><div class="progress-fill" id="forecastBar" style="width:0%"></div></div>
+      </div>
+    </div>
+    <p class="forecast-note" id="forecastNote" style="display:none"></p>
   </div>
 
   <!-- History list -->
@@ -1294,6 +1355,7 @@ const T_DATA = {
     data:{ title:'Your data', hint:'Back up your meals & water, or restore from a previous backup.', export:'⬇ Export', import:'⬆ Import' },
     manual:{ title:'Add manually', name:'Food name', namePh:'e.g. Protein shake', cal:'Calories (kcal)', protein:'Protein (g)', carbs:'Carbs (g)', fat:'Fat (g)', addBtn:'Add Meal' },
     weight:{ logTitle:'Log weight', date:'Date', kg:'Weight (kg)', goal:'Goal weight (kg)', save:'Save weight', starting:'Starting', current:'Current', change:'Total change', goalLabel:'Goal', chart:'Weight over time', empty:'No entries yet. Log your first weight above.', first:'first entry' },
+    forecast:{ title:'Expected progress', deficit:'Avg. deficit/day', perWeek:'Expected/week', toGo:'Remaining', date:'Est. goal date', noteNoData:'Log meals for at least 3 days to see your forecast.', noteSurplus:'You are eating above your goal — reduce intake to lose weight.', noteGoalReached:'Goal reached! Great work!', noteNoGoal:'Set a goal weight to see your projected date.' },
     history:{ chart:'Calorie history' },
     search:{ ph:'Search library or type to filter…', online:'Search online', log:'Log food', amount:'Amount (g)', logBtn:'Log to Today', empty:'No foods found. Try "Search online" for more results.', searching:'Searching online…', failed:'Search failed. Check your internet connection.', onlineFor:'Online results for', inLib:'result', inLibPl:'results', inLibSuffix:' in library' },
     calendar:{ tip:'Tap any day to view or log meals for that date.', under:'Under goal', over:'Over goal', today:'Today', days:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] },
@@ -1311,6 +1373,7 @@ const T_DATA = {
     data:{ title:'Dine data', hint:'Sikkerhetskopier måltidene dine, eller gjenopprett fra en tidligere kopi.', export:'⬇ Eksporter', import:'⬆ Importer' },
     manual:{ title:'Legg til manuelt', name:'Matvare', namePh:'f.eks. Proteinshake', cal:'Kalorier (kcal)', protein:'Protein (g)', carbs:'Karbohydrater (g)', fat:'Fett (g)', addBtn:'Legg til måltid' },
     weight:{ logTitle:'Logg vekt', date:'Dato', kg:'Vekt (kg)', goal:'Målvekt (kg)', save:'Lagre vekt', starting:'Start', current:'Nåværende', change:'Total endring', goalLabel:'Mål', chart:'Vekt over tid', empty:'Ingen oppføringer ennå. Logg din første vekt ovenfor.', first:'første oppføring' },
+    forecast:{ title:'Forventet fremgang', deficit:'Snitt underskudd/dag', perWeek:'Forventet/uke', toGo:'Gjenstår', date:'Est. måldato', noteNoData:'Logg måltider i minst 3 dager for å se prognosen.', noteSurplus:'Du spiser over målet ditt — reduser inntaket for å gå ned i vekt.', noteGoalReached:'Mål nådd! Bra jobbet!', noteNoGoal:'Sett en målvekt for å se estimert dato.' },
     history:{ chart:'Kalori-historikk' },
     search:{ ph:'Søk i biblioteket…', online:'Søk online', log:'Logg matvare', amount:'Mengde (g)', logBtn:'Logg til i dag', empty:'Ingen matvarer funnet. Prøv "Søk online" for flere resultater.', searching:'Søker online…', failed:'Søk feilet. Sjekk internettforbindelsen din.', onlineFor:'Nettresultater for', inLib:'resultat', inLibPl:'resultater', inLibSuffix:' i biblioteket' },
     calendar:{ tip:'Trykk på en dag for å vise eller logge måltider.', under:'Under mål', over:'Over mål', today:'I dag', days:['Man','Tir','Ons','Tor','Fre','Lør','Søn'] },
@@ -1343,6 +1406,7 @@ function setLang(l) {
   renderToday();
   renderWater();
   renderCalendar();
+  if (document.getElementById('page-weight').classList.contains('active')) renderProgressForecast();
 }
 
 function applyTranslations() {
@@ -1389,6 +1453,11 @@ function applyTranslations() {
   document.getElementById('wStatChangeLbl').textContent = T('weight.change');
   document.getElementById('wStatGoalLbl').textContent   = T('weight.goalLabel');
   document.getElementById('weightChartTitle').textContent = T('weight.chart');
+  document.getElementById('forecastTitle').textContent      = T('forecast.title');
+  document.getElementById('forecastDeficitLbl').textContent = T('forecast.deficit');
+  document.getElementById('forecastWeekLbl').textContent    = T('forecast.perWeek');
+  document.getElementById('forecastToGoLbl').textContent    = T('forecast.toGo');
+  document.getElementById('forecastDateLbl').textContent    = T('forecast.date');
   document.getElementById('historyChartTitle').textContent = T('history.chart');
   document.getElementById('searchInput').placeholder  = T('search.ph');
   document.getElementById('searchOnlineBtn').textContent = T('search.online');
@@ -1867,6 +1936,7 @@ function renderWeightPage() {
   const activePeriodBtn = document.querySelector('#weightPeriodBtns .period-btn.active');
   const days = activePeriodBtn ? parseInt(activePeriodBtn.dataset.days ?? '30') : 30;
   renderWeightChart(days);
+  renderProgressForecast();
 }
 
 function renderWeightChart(days, btn) {
@@ -1904,6 +1974,109 @@ function renderWeightChart(days, btn) {
       },
     },
   });
+}
+
+// ── Progress forecast ────────────────────────────────────────────
+function renderProgressForecast() {
+  const forecastEl = document.getElementById('progressForecast');
+  const noteEl     = document.getElementById('forecastNote');
+  const progressEl = document.getElementById('forecastProgressWrap');
+  const weights    = loadWeights();
+
+  if (!weights.length) { forecastEl.style.display = 'none'; return; }
+  forecastEl.style.display = 'block';
+
+  const current  = weights[weights.length - 1].weight;
+  const first    = weights[0].weight;
+  const goal     = getWeightGoal();
+  const calGoal  = getGoal();
+  const data     = loadData();
+
+  // Average calories over last 14 days (only days with logged meals)
+  let totalCal = 0, dayCount = 0;
+  for (let i = 0; i < 14; i++) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const iso = d.toISOString().split('T')[0];
+    const meals = data[iso];
+    if (meals && meals.length > 0) {
+      totalCal += meals.reduce((s, m) => s + m.calories, 0);
+      dayCount++;
+    }
+  }
+
+  // Reset all displays
+  noteEl.style.display = 'none';
+  progressEl.style.display = 'none';
+  document.getElementById('forecastDeficit').textContent  = '—';
+  document.getElementById('forecastPerWeek').textContent  = '—';
+  document.getElementById('forecastToGo').textContent     = '—';
+  document.getElementById('forecastDate').textContent     = '—';
+  ['forecastDeficit','forecastPerWeek','forecastToGo'].forEach(id => {
+    document.getElementById(id).className = '';
+  });
+
+  if (dayCount < 3) {
+    noteEl.textContent = T('forecast.noteNoData');
+    noteEl.style.display = 'block';
+    return;
+  }
+
+  const avgCal   = totalCal / dayCount;
+  const deficit  = calGoal - avgCal;         // positive = eating less than goal
+  const kgPerWeek = (deficit * 7) / 7700;   // 7700 kcal ≈ 1 kg
+
+  const defEl  = document.getElementById('forecastDeficit');
+  const weekEl = document.getElementById('forecastPerWeek');
+  const toGoEl = document.getElementById('forecastToGo');
+  const dateEl = document.getElementById('forecastDate');
+
+  defEl.textContent = (deficit >= 0 ? '-' : '+') + Math.abs(Math.round(deficit)) + ' kcal';
+  defEl.className   = deficit > 50 ? 'loss' : deficit < -50 ? 'gain' : '';
+
+  if (Math.abs(kgPerWeek) < 0.01) {
+    weekEl.textContent = '~0 kg';
+  } else {
+    weekEl.textContent = (kgPerWeek >= 0 ? '-' : '+') + Math.abs(r1(kgPerWeek)) + ' kg';
+    weekEl.className   = kgPerWeek > 0 ? 'loss' : 'gain';
+  }
+
+  if (goal) {
+    const kgToGo = r1(current - goal);
+    if (current <= goal) {
+      toGoEl.textContent = T('forecast.noteGoalReached').split('!')[0] + '!';
+      toGoEl.className   = 'loss';
+      dateEl.textContent = '✅';
+      noteEl.textContent = T('forecast.noteGoalReached');
+      noteEl.style.display = 'block';
+    } else {
+      toGoEl.textContent = kgToGo + ' kg';
+      if (kgPerWeek <= 0.05) {
+        dateEl.textContent = '—';
+        noteEl.textContent = T('forecast.noteSurplus');
+        noteEl.style.display = 'block';
+      } else {
+        const daysToGoal = Math.round((kgToGo / kgPerWeek) * 7);
+        const projDate   = new Date(); projDate.setDate(projDate.getDate() + daysToGoal);
+        const locale     = lang === 'no' ? 'nb-NO' : undefined;
+        dateEl.textContent = projDate.toLocaleDateString(locale, { month:'short', day:'numeric', year:'numeric' });
+      }
+    }
+
+    // Progress bar: start → current → goal (only for weight loss direction)
+    const totalSpan = Math.abs(first - goal);
+    if (totalSpan > 0.1 && ((first > goal && current >= goal) || (first < goal && current <= goal))) {
+      const done = Math.abs(first - current);
+      const pct  = Math.min(done / totalSpan * 100, 100);
+      document.getElementById('forecastBar').style.width = pct + '%';
+      document.getElementById('forecastStartLabel').textContent   = first + ' kg';
+      document.getElementById('forecastCurrentLabel').textContent = current + ' kg (' + Math.round(pct) + '%)';
+      document.getElementById('forecastGoalLabel').textContent    = goal + ' kg';
+      progressEl.style.display = 'block';
+    }
+  } else {
+    noteEl.textContent = T('forecast.noteNoGoal');
+    noteEl.style.display = 'block';
+  }
 }
 
 // ── Calendar ─────────────────────────────────────────────────────
