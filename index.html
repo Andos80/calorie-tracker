@@ -961,7 +961,7 @@ async function signUp() {
   const email    = document.getElementById('authEmail').value.trim();
   const password = document.getElementById('authPassword').value;
   document.getElementById('authError').textContent = '';
-  const { error } = await sb.auth.signUp({ email, password });
+  const { error } = await sb.auth.signUp({ email, password, options: { emailRedirectTo: 'https://andos80.github.io/calorie-tracker' } });
   if (error) document.getElementById('authError').textContent = error.message;
   else document.getElementById('authMsg').textContent = 'Sjekk e-posten din for bekreftelse!';
 }
